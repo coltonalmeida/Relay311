@@ -2,28 +2,6 @@
   "name": "relay311",
   "version": "0.1.0",
   "private": true,
-<<<<<<< HEAD
-  "description": "Relay311 311 call triage API",
-  "scripts": {
-    "dev": "npm run build && node --watch dist/server/index.js",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/server/index.js",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "npm run build && node --test dist/server/services/transcriptProcessor.test.js dist/shared/schemas.test.js"
-  },
-  "dependencies": {
-    "@google/genai": "^2.23.0",
-    "@supabase/supabase-js": "^2.57.0",
-    "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "zod": "^4.1.5"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^22.18.6",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
-=======
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -52,6 +30,5 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4"
->>>>>>> origin/main
   }
 }
