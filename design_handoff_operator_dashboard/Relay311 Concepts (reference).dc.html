@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#eeeae1;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  * { box-sizing: border-box; }
+  a{color:#ff5c35}
+  a:hover{color:#e14e2a}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:rgba(20,35,31,.18);border-radius:4px}
+  @keyframes r311-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes r311-bar{0%,100%{height:6px}50%{height:28px}}
+  @keyframes r311-blink{0%,100%{opacity:1}50%{opacity:0}}
+  .r311-turn{padding:40px 44px 60px;border-bottom:1px solid rgba(20,35,31,.1)}
+  .r311-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+  .r311-tid{font:700 10px 'JetBrains Mono',monospace;padding:3px 7px;background:#14231f;color:#fff;border-radius:4px;text-decoration:none}
+  .r311-tname{font:700 15px/1.2 'Inter',sans-serif;color:#14231f}
+  .r311-tdesc{margin:0 0 26px;font:400 13px/1.5 'Inter',sans-serif;color:#5b6664;max-width:760px}
+  .r311-opts{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+  .r311-opt{flex:none;display:flex;flex-direction:column;gap:10px}
+  .r311-oid{font:700 10.5px 'JetBrains Mono',monospace;padding:3px 8px;background:rgba(20,35,31,.08);color:#14231f;border-radius:5px;text-decoration:none}
+  .r311-olabel{display:flex;align-items:baseline;gap:8px;font:600 12px/1.3 'Inter',sans-serif;color:#14231f}
+  .r311-osub{font:400 11.5px/1.4 'Inter',sans-serif;color:#78827f;margin:0 0 2px}
+</style>
+</helmet>
+
+<section class="r311-turn" id="t1">
+  <div class="r311-thd"><a class="r311-tid" href="#t1">1</a><span class="r311-tname">Relay311 operator dashboard — two concepts</span></div>
+  <p class="r311-tdesc">Balanced, SaaS-grade density for both. They differ in navigation, hierarchy, and how dense the working screens feel. Every screen shares the same sample incidents/calls so you can compare side by side. Click sidebar / tab items inside each mock to move between Home, Queue, Detail, Calls, and the live-call demo view.</p>
+  <div class="r311-opts">
+
+    <div class="r311-opt" id="1a">
+      <div class="r311-olabel"><a class="r311-oid" href="#1a">1a</a>Command Console</div>
+      <p class="r311-osub">Dark sidebar nav · dense data tables · map-forward home · always-on split detail view</p>
+      <div style="width:1360px;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -20px rgba(20,35,31,.35);border:1px solid rgba(20,35,31,.14)">
+
+        <!-- TOP BAR -->
+        <div style="height:56px;background:#14231f;display:flex;align-items:center;justify-content:space-between;padding:0 20px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:26px;height:26px;border-radius:6px;background:#ff5c35;display:grid;place-items:center;color:#fff;font:800 12px 'JetBrains Mono',monospace">R3</div>
+            <span style="color:#fff;font-weight:800;font-size:15px;letter-spacing:-.01em">Relay311</span>
+            <span style="color:#8ba39d;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.1em;margin-left:6px;padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-radius:4px">OPERATOR CONSOLE</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:230px;height:30px;border-radius:6px;background:rgba(255,255,255,.08);color:#9fb0ac;font-size:12px;display:flex;align-items:center;padding:0 10px">Search incidents, calls, addresses…</div>
+            <div style="display:flex;align-items:center;gap:6px;color:#c9ffe0;font:700 11px 'JetBrains Mono',monospace"><span style="width:7px;height:7px;border-radius:50%;background:#3ddc84;animation:r311-pulse 1.4s infinite"></span>3 LIVE</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#4a6660;color:#fff;display:grid;place-items:center;font:700 11px 'Inter',sans-serif">JM</div>
+          </div>
+        </div>
+
+        <!-- BODY -->
+        <div style="display:flex;min-height:760px;background:#f6f2e9">
+          <!-- SIDEBAR -->
+          <div style="width:196px;background:#182a25;padding:16px 0;display:flex;flex-direction:column;gap:2px">
+            <div onClick="{{ navA.home.onClick }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 20px;border-left:3px solid {{ navA.home.accent }};background:{{ navA.home.bg }};color:{{ navA.home.fg }};font:600 13px 'Inter',sans-serif">
+              <span style="width:8px;height:8px;background:currentColor;border-radius:2px"></span>Home
+            </div>
+            <div onClick="{{ navA.queue.onClick }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 20px;border-left:3px solid {{ navA.queue.accent }};background:{{ navA.queue.bg }};color:{{ navA.queue.fg }};font:600 13px 'Inter',sans-serif">
+              <span style="width:8px;height:8px;background:currentColor;border-radius:2px"></span>Incident Queue
+              <span style="margin-left:auto;background:#ff5c35;color:#fff;font:700 10px 'JetBrains Mono',monospace;padding:1px 6px;border-radius:8px">{{ openCount }}</span>
+            </div>
+            <div onClick="{{ navA.calls.onClick }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 20px;border-left:3px solid {{ navA.calls.accent }};background:{{ navA.calls.bg }};color:{{ navA.calls.fg }};font:600 13px 'Inter',sans-serif">
+              <span style="width:8px;height:8px;background:currentColor;border-radius:50%"></span>Calls &amp; History
+            </div>
+            <div onClick="{{ navA.live.onClick }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 20px;border-left:3px solid {{ navA.live.accent }};background:{{ navA.live.bg }};color:{{ navA.live.fg }};font:600 13px 'Inter',sans-serif">
+              <span style="width:8px;height:8px;border-radius:50%;background:#ff5c35;animation:r311-pulse 1.4s infinite"></span>Live Call
+            </div>
+            <div style="margin-top:auto;padding:14px 20px 4px;font:500 10px 'JetBrains Mono',monospace;color:#5f7770;letter-spacing:.08em;border-top:1px solid rgba(255,255,255,.06);margin-top:20px">
+              CITY OF TORONTO · DEMO
+            </div>
+          </div>
+
+          <!-- MAIN -->
+          <div style="flex:1;padding:24px;overflow:auto">
+
+            <sc-if value="{{ tabAHome }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px">
+                  <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:14px 16px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#78827f">OPEN INCIDENTS</div>
+                    <div style="font:800 28px 'Inter',sans-serif;color:#14231f;margin-top:4px">18</div>
+                  </div>
+                  <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:14px 16px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#78827f">CALLS TODAY</div>
+                    <div style="font:800 28px 'Inter',sans-serif;color:#14231f;margin-top:4px">47</div>
+                  </div>
+                  <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:14px 16px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#78827f">AVG RESPONSE</div>
+                    <div style="font:800 28px 'Inter',sans-serif;color:#14231f;margin-top:4px">22m</div>
+                  </div>
+                  <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:14px 16px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#78827f">AI AUTO-RESOLVED</div>
+                    <div style="font:800 28px 'Inter',sans-serif;color:#14231f;margin-top:4px">61%</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:16px;align-items:flex-start;height:560px">
+                  <div style="flex:1.7;height:100%;background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px;display:flex;flex-direction:column">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+                      <span style="font:700 12px 'Inter',sans-serif;color:#14231f">Active incident map — click a hotspot for details</span>
+                      <span style="font:500 11px 'JetBrains Mono',monospace;color:#9aa5a2">{{ openCount }} open</span>
+                    </div>
+                    <div style="position:relative;flex:1;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#dbe4de,#dbe4de 10px,#e7ede9 10px,#e7ede9 20px)">
+                      <div style="position:absolute;top:8px;left:10px;font:700 10px 'JetBrains Mono',monospace;color:#5b6664;letter-spacing:.08em;background:rgba(255,253,248,.85);padding:3px 6px;border-radius:4px">CITY MAP — INCIDENT HOTSPOTS</div>
+                      <sc-for list="{{ incidentsA }}" as="p" hint-placeholder-count="8">
+                        <div onClick="{{ p.onClick }}" title="{{ p.title }}" style="cursor:pointer;position:absolute;width:18px;height:18px;margin-left:-9px;margin-top:-9px;border-radius:50%;background:{{ p.prioDot }};border:3px solid #fffdf8;left:{{ p.mapX }}%;top:{{ p.mapY }}%;box-shadow:0 1px 6px rgba(0,0,0,.25)" style-hover="transform:scale(1.25)"></div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;gap:16px;margin-top:10px;font:500 11px 'Inter',sans-serif;color:#5b6664">
+                      <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(52% 0.19 25)"></span>Critical</span>
+                      <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#ff5c35"></span>High</span>
+                      <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(72% 0.14 80)"></span>Medium</span>
+                      <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(60% 0.02 220)"></span>Low</span>
+                    </div>
+                  </div>
+                  <div style="flex:1;height:100%;background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:14px;display:flex;flex-direction:column">
+                    <div style="font:700 12px 'Inter',sans-serif;color:#14231f;margin-bottom:8px;flex:none">Incident list</div>
+                    <div style="overflow:auto;flex:1">
+                      <sc-for list="{{ incidentsA }}" as="inc" hint-placeholder-count="8">
+                        <div onClick="{{ inc.onClick }}" style="cursor:pointer;padding:10px 8px;border-bottom:1px solid rgba(20,35,31,.07)" style-hover="background:rgba(255,92,53,.05)">
+                          <div style="display:flex;justify-content:space-between;gap:6px">
+                            <span style="font:600 12.5px 'Inter',sans-serif;color:#14231f">{{ inc.title }}</span>
+                            <span style="width:7px;height:7px;border-radius:50%;background:{{ inc.prioDot }};flex:none;margin-top:4px"></span>
+                          </div>
+                          <div style="font-size:11px;color:#8b9694;margin-top:2px">{{ inc.location }}</div>
+                          <div style="display:flex;gap:6px;margin-top:6px">
+                            <span style="font:600 10px 'JetBrains Mono',monospace;color:#78827f">{{ inc.id }}</span>
+                            <span style="display:inline-flex;padding:1px 7px;border-radius:6px;background:{{ inc.statusBg }};color:{{ inc.statusFg }};font:600 10px 'Inter',sans-serif">{{ inc.statusLabel }}</span>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabAQueue }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+                  <sc-for list="{{ statusFiltersA }}" as="f" hint-placeholder-count="6">
+                    <div onClick="{{ f.onClick }}" style="cursor:pointer;padding:6px 12px;border-radius:20px;font:600 11.5px 'Inter',sans-serif;background:{{ f.bg }};color:{{ f.fg }};border:1px solid {{ f.border }}">{{ f.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;overflow:hidden">
+                  <div style="display:grid;grid-template-columns:90px 150px 1.6fr 90px 100px 70px 80px 110px;gap:8px;padding:10px 14px;background:rgba(20,35,31,.04);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#5b6664">
+                    <span>ID</span><span>CATEGORY</span><span>TITLE / LOCATION</span><span>PRIORITY</span><span>STATUS</span><span>LINKED</span><span>UPDATED</span><span>ASSIGNEE</span>
+                  </div>
+                  <sc-for list="{{ incidentsA }}" as="inc" hint-placeholder-count="8">
+                    <div onClick="{{ inc.onClick }}" style="cursor:pointer;display:grid;grid-template-columns:90px 150px 1.6fr 90px 100px 70px 80px 110px;gap:8px;padding:12px 14px;border-top:1px solid rgba(20,35,31,.07);align-items:center;font-size:12.5px" style-hover="background:rgba(255,92,53,.05)">
+                      <span style="font:600 11px 'JetBrains Mono',monospace;color:#78827f">{{ inc.id }}</span>
+                      <span style="display:flex;align-items:center;gap:6px"><span style="width:20px;height:20px;border-radius:50%;background:{{ inc.catBg }};color:{{ inc.catFg }};font:700 8px 'JetBrains Mono',monospace;display:grid;place-items:center">{{ inc.catShort }}</span><span style="color:#3f4a47">{{ inc.catLabel }}</span></span>
+                      <span style="color:#14231f;font-weight:600">{{ inc.title }}<div style="font-weight:400;color:#8b9694;font-size:11px">{{ inc.location }}</div></span>
+                      <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:{{ inc.prioBg }};color:{{ inc.prioFg }};font:600 11px 'Inter',sans-serif;width:fit-content"><span style="width:6px;height:6px;border-radius:50%;background:{{ inc.prioDot }}"></span>{{ inc.prioLabel }}</span>
+                      <span style="display:inline-flex;padding:3px 8px;border-radius:6px;background:{{ inc.statusBg }};color:{{ inc.statusFg }};font:600 11px 'Inter',sans-serif;width:fit-content">{{ inc.statusLabel }}</span>
+                      <span style="color:#5b6664">{{ inc.linked }} calls</span>
+                      <span style="color:#8b9694;font-size:11.5px">{{ inc.updated }}</span>
+                      <span style="color:#5b6664;font-size:11.5px">{{ inc.assignee }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabADetail }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div onClick="{{ navA.queue.onClick }}" style="cursor:pointer;font:600 11.5px 'Inter',sans-serif;color:#ff5c35;margin-bottom:12px">&larr; Back to queue</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+                  <div>
+                    <div style="font:700 11px 'JetBrains Mono',monospace;color:#9aa5a2;margin-bottom:4px">{{ detailA.id }}</div>
+                    <h2 style="margin:0 0 8px;font-size:22px;color:#14231f;letter-spacing:-.01em">{{ detailA.title }}</h2>
+                    <div style="display:flex;gap:8px">
+                      <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:{{ detailA.prioBg }};color:{{ detailA.prioFg }};font:600 11.5px 'Inter',sans-serif"><span style="width:6px;height:6px;border-radius:50%;background:{{ detailA.prioDot }}"></span>{{ detailA.prioLabel }}</span>
+                      <span style="display:inline-flex;padding:4px 9px;border-radius:6px;background:{{ detailA.statusBg }};color:{{ detailA.statusFg }};font:600 11.5px 'Inter',sans-serif">{{ detailA.statusLabel }}</span>
+                      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:{{ detailA.catBg }};color:{{ detailA.catFg }};font:600 11.5px 'Inter',sans-serif">{{ detailA.catLabel }}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px">
+                    <button style="border:1px solid #14231f;background:#fffdf8;color:#14231f;font:700 11.5px 'Inter',sans-serif;padding:9px 16px;border-radius:7px;cursor:pointer">Merge</button>
+                    <button style="border:1px solid rgba(20,35,31,.2);background:transparent;color:#b5352a;font:700 11.5px 'Inter',sans-serif;padding:9px 16px;border-radius:7px;cursor:pointer">Dismiss</button>
+                    <button style="border:none;background:#14231f;color:#fff;font:700 11.5px 'Inter',sans-serif;padding:9px 18px;border-radius:7px;cursor:pointer;box-shadow:3px 3px 0 #ff5c35">Approve</button>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:16px;align-items:flex-start">
+                  <div style="flex:1.5;display:flex;flex-direction:column;gap:14px">
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#ff5c35;margin-bottom:8px">AI SUMMARY</div>
+                      <p style="margin:0;font-size:13.5px;line-height:1.55;color:#2b3532">{{ detailA.summary }}</p>
+                    </div>
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5b6664;margin-bottom:10px">EXTRACTED DETAILS</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                        <sc-for list="{{ detailA.fields }}" as="fl" hint-placeholder-count="4">
+                          <div><div style="font:600 10px 'Inter',sans-serif;color:#9aa5a2;text-transform:uppercase;letter-spacing:.04em">{{ fl.k }}</div><div style="font:500 13px 'Inter',sans-serif;color:#14231f;margin-top:2px">{{ fl.v }}</div></div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5b6664;margin-bottom:10px">TRANSCRIPT EXCERPT</div>
+                      <div style="max-height:190px;overflow:auto">
+                        <sc-for list="{{ detailA.transcript }}" as="ln" hint-placeholder-count="4">
+                          <div style="display:grid;grid-template-columns:64px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(20,35,31,.06)">
+                            <span style="font:700 9.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:{{ ln.color }};padding-top:2px">{{ ln.role }}</span>
+                            <p style="margin:0;font-size:12.5px;line-height:1.5;color:#2b3532">{{ ln.text }}</p>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5b6664;margin-bottom:10px">LINKED CALLS (DUPLICATES)</div>
+                      <sc-for list="{{ detailA.linkedCalls }}" as="lc" hint-placeholder-count="3">
+                        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(20,35,31,.06);font-size:12px">
+                          <span style="font:600 11px 'JetBrains Mono',monospace;color:#14231f">{{ lc.id }}</span>
+                          <span style="color:#78827f">{{ lc.time }} · {{ lc.dur }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5b6664;margin-bottom:10px">LOCATION</div>
+                      <div style="position:relative;height:110px;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#dbe4de,#dbe4de 10px,#e7ede9 10px,#e7ede9 20px)">
+                        <div style="position:absolute;width:12px;height:12px;border-radius:50%;background:{{ detailA.prioDot }};border:2px solid #fffdf8;left:46%;top:46%"></div>
+                      </div>
+                      <div style="font-size:11.5px;color:#5b6664;margin-top:8px">{{ detailA.location }}</div>
+                    </div>
+                    <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                      <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5b6664;margin-bottom:10px">ACTIVITY LOG</div>
+                      <sc-for list="{{ detailA.activity }}" as="ev" hint-placeholder-count="3">
+                        <div style="display:flex;gap:8px;padding:5px 0;font-size:12px;color:#3f4a47"><span style="width:6px;height:6px;border-radius:50%;background:#ff5c35;margin-top:5px;flex:none"></span>{{ ev }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabACalls }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="font:600 12px 'Inter',sans-serif;color:#5b6664;margin-bottom:12px">Every phone call is logged here, whether or not it produced an incident.</div>
+                <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;overflow:hidden">
+                  <div style="display:grid;grid-template-columns:100px 80px 70px 110px 1.6fr 160px;gap:8px;padding:10px 14px;background:rgba(20,35,31,.04);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#5b6664">
+                    <span>CALL ID</span><span>TIME</span><span>DUR</span><span>CALLER</span><span>REPORTED ISSUE (AI)</span><span>OUTCOME</span>
+                  </div>
+                  <sc-for list="{{ calls }}" as="c" hint-placeholder-count="8">
+                    <div style="display:grid;grid-template-columns:100px 80px 70px 110px 1.6fr 160px;gap:8px;padding:11px 14px;border-top:1px solid rgba(20,35,31,.07);align-items:center;font-size:12.5px">
+                      <span style="font:600 11px 'JetBrains Mono',monospace;color:#78827f">{{ c.id }}</span>
+                      <span style="color:#5b6664">{{ c.time }}</span>
+                      <span style="color:#5b6664">{{ c.duration }}</span>
+                      <span style="color:#5b6664;font-family:'JetBrains Mono',monospace;font-size:11px">{{ c.caller }}</span>
+                      <span style="color:#2b3532">{{ c.issue }}</span>
+                      <span style="display:inline-flex;padding:3px 9px;border-radius:6px;background:{{ c.outBg }};color:{{ c.outFg }};font:600 11px 'Inter',sans-serif;width:fit-content">{{ c.outLabel }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabALive }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:16px;align-items:flex-start">
+                <div style="flex:1.5;background:#14231f;border-radius:10px;padding:20px;color:#fff">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="width:9px;height:9px;border-radius:50%;background:#ff5c35;animation:r311-pulse 1.2s infinite"></span>
+                      <span style="font:700 12px 'JetBrains Mono',monospace;letter-spacing:.08em">LIVE CALL · 00:47</span>
+                    </div>
+                    <span style="font:500 12px 'JetBrains Mono',monospace;color:#8ba39d">Caller: (416) ***-0192</span>
+                  </div>
+                  <div style="display:flex;gap:4px;align-items:center;justify-content:center;height:60px;background:rgba(255,255,255,.05);border-radius:8px;margin-bottom:14px">
+                    <sc-for list="{{ waveform }}" as="w" hint-placeholder-count="16">
+                      <span style="width:4px;background:#b8efc7;border-radius:3px;height:14px;animation:r311-bar {{ w.dur }}s ease-in-out infinite;animation-delay:{{ w.delay }}s"></span>
+                    </sc-for>
+                  </div>
+                  <div style="max-height:260px;overflow:auto;padding-right:4px">
+                    <sc-for list="{{ liveTranscript }}" as="ln" hint-placeholder-count="4">
+                      <div style="display:grid;grid-template-columns:64px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+                        <span style="font:700 9.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:{{ ln.colorDark }};padding-top:2px">{{ ln.role }}</span>
+                        <p style="margin:0;font-size:13px;line-height:1.5;color:#e9f3ef">{{ ln.text }}</p>
+                      </div>
+                    </sc-for>
+                    <div style="display:grid;grid-template-columns:64px 1fr;gap:10px;padding:9px 0">
+                      <span style="font:700 9.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#8ba39d">ASSISTANT</span>
+                      <p style="margin:0;font-size:13px;color:#8ba39d"><span style="animation:r311-blink 1s infinite">●</span> transcribing…</p>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:10px;margin-top:16px">
+                    <button style="flex:1;padding:11px;border-radius:7px;border:none;background:#ff5c35;color:#fff;font:700 12px 'Inter',sans-serif;cursor:pointer">End Call</button>
+                    <button style="flex:1;padding:11px;border-radius:7px;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;font:700 12px 'Inter',sans-serif;cursor:pointer">Escalate to 911 line</button>
+                  </div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+                  <div style="background:#fffdf8;border:1px solid rgba(20,35,31,.1);border-radius:10px;padding:16px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#ff5c35;margin-bottom:10px">AI EXTRACTION — LIVE</div>
+                    <sc-for list="{{ liveFields }}" as="lf" hint-placeholder-count="3">
+                      <div style="margin-bottom:10px">
+                        <div style="display:flex;justify-content:space-between"><span style="font:600 10px 'Inter',sans-serif;color:#9aa5a2;text-transform:uppercase">{{ lf.k }}</span><span style="font:600 9px 'JetBrains Mono',monospace;color:#3ddc84">AUTO</span></div>
+                        <div style="font:500 13px 'Inter',sans-serif;color:#14231f;margin-top:2px">{{ lf.v }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="background:oklch(95% 0.05 80);border:1px solid oklch(80% 0.1 80);border-radius:10px;padding:14px">
+                    <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em;color:oklch(42% 0.12 80);margin-bottom:6px">⚠ POSSIBLE DUPLICATE</div>
+                    <p style="margin:0;font-size:12px;line-height:1.5;color:oklch(30% 0.08 80)">Matches open incident <b>INC-2227</b> (same location, 2 linked calls). Will auto-link when call ends unless dismissed.</p>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r311-opt" id="1b">
+      <div class="r311-olabel"><a class="r311-oid" href="#1b">1b</a>Clarity Desk</div>
+      <p class="r311-osub">Top-tab nav · card-based lists · stat-grid home with map as one card · tabbed single-column detail</p>
+      <div style="width:1360px;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px -20px rgba(20,35,31,.28);border:1px solid rgba(20,35,31,.1)">
+
+        <!-- TOP NAV -->
+        <div style="background:#fffdf8;border-bottom:1px solid rgba(20,35,31,.1);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px">
+          <div style="display:flex;align-items:center;gap:26px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#14231f;display:grid;place-items:center;color:#b8efc7;font:800 12px 'JetBrains Mono',monospace">R3</div>
+              <span style="font-weight:800;font-size:16px;color:#14231f;letter-spacing:-.01em">Relay311</span>
+            </div>
+            <div style="display:flex;gap:4px">
+              <div onClick="{{ navB.home.onClick }}" style="cursor:pointer;padding:10px 14px;font:600 13px 'Inter',sans-serif;color:{{ navB.home.fg }};border-bottom:2px solid {{ navB.home.accent }}">Home</div>
+              <div onClick="{{ navB.queue.onClick }}" style="cursor:pointer;padding:10px 14px;font:600 13px 'Inter',sans-serif;color:{{ navB.queue.fg }};border-bottom:2px solid {{ navB.queue.accent }}">Incidents</div>
+              <div onClick="{{ navB.calls.onClick }}" style="cursor:pointer;padding:10px 14px;font:600 13px 'Inter',sans-serif;color:{{ navB.calls.fg }};border-bottom:2px solid {{ navB.calls.accent }}">Calls</div>
+              <div onClick="{{ navB.live.onClick }}" style="cursor:pointer;padding:10px 14px;font:600 13px 'Inter',sans-serif;color:{{ navB.live.fg }};border-bottom:2px solid {{ navB.live.accent }}">Live Call</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font:600 11px 'JetBrains Mono',monospace;color:#397554;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:#3ddc84"></span>3 live</span>
+            <div style="width:30px;height:30px;border-radius:50%;background:#e7ede9;color:#14231f;display:grid;place-items:center;font:700 11px 'Inter',sans-serif">JM</div>
+          </div>
+        </div>
+
+        <div style="background:#f6f2e9;min-height:760px;padding:28px 32px">
+
+          <sc-if value="{{ tabBHome }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="margin-bottom:20px">
+                <div style="font-size:20px;font-weight:700;color:#14231f;letter-spacing:-.01em">Good morning — here's what's happening across the city</div>
+                <div style="font-size:12.5px;color:#78827f;margin-top:3px">Wednesday, September 16 · 47 calls handled so far today</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+                <div style="background:#fffdf8;border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <div style="font:600 11px 'Inter',sans-serif;color:#78827f">Open incidents</div>
+                  <div style="font:800 26px 'Inter',sans-serif;color:#14231f;margin-top:4px">18</div>
+                </div>
+                <div style="background:#fffdf8;border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <div style="font:600 11px 'Inter',sans-serif;color:#78827f">Calls today</div>
+                  <div style="font:800 26px 'Inter',sans-serif;color:#14231f;margin-top:4px">47</div>
+                </div>
+                <div style="background:#fffdf8;border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <div style="font:600 11px 'Inter',sans-serif;color:#78827f">Avg response</div>
+                  <div style="font:800 26px 'Inter',sans-serif;color:#14231f;margin-top:4px">22m</div>
+                </div>
+                <div style="background:#fffdf8;border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <div style="font:600 11px 'Inter',sans-serif;color:#78827f">AI auto-resolved</div>
+                  <div style="font:800 26px 'Inter',sans-serif;color:#397554;margin-top:4px">61%</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:16px;align-items:stretch;height:520px">
+                <div style="flex:1.7;background:#fffdf8;border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(20,35,31,.06);display:flex;flex-direction:column">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+                    <span style="font:700 13px 'Inter',sans-serif;color:#14231f">City map — click a hotspot for details</span>
+                    <span style="font:500 11px 'JetBrains Mono',monospace;color:#9aa5a2">{{ openCount }} open</span>
+                  </div>
+                  <div style="position:relative;flex:1;border-radius:12px;overflow:hidden;background:repeating-linear-gradient(45deg,#dbe4de,#dbe4de 10px,#e7ede9 10px,#e7ede9 20px)">
+                    <sc-for list="{{ incidentsB }}" as="p" hint-placeholder-count="8">
+                      <div onClick="{{ p.onClick }}" title="{{ p.title }}" style="cursor:pointer;position:absolute;width:18px;height:18px;margin-left:-9px;margin-top:-9px;border-radius:50%;background:{{ p.prioDot }};border:3px solid #fffdf8;left:{{ p.mapX }}%;top:{{ p.mapY }}%;box-shadow:0 1px 6px rgba(0,0,0,.25)" style-hover="transform:scale(1.25)"></div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:16px;margin-top:10px;font:500 11px 'Inter',sans-serif;color:#5b6664">
+                    <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(52% 0.19 25)"></span>Critical</span>
+                    <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#ff5c35"></span>High</span>
+                    <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(72% 0.14 80)"></span>Medium</span>
+                    <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:oklch(60% 0.02 220)"></span>Low</span>
+                  </div>
+                </div>
+                <div style="flex:1;background:#fffdf8;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(20,35,31,.06);display:flex;flex-direction:column">
+                  <div style="font:700 13px 'Inter',sans-serif;color:#14231f;margin-bottom:8px;flex:none">Incident list</div>
+                  <div style="overflow:auto;flex:1">
+                    <sc-for list="{{ incidentsB }}" as="inc" hint-placeholder-count="8">
+                      <div onClick="{{ inc.onClick }}" style="cursor:pointer;padding:11px 10px;border-radius:10px;margin-bottom:4px" style-hover="background:#e7ede9">
+                        <div style="display:flex;justify-content:space-between;gap:6px">
+                          <span style="font:700 12.5px 'Inter',sans-serif;color:#14231f">{{ inc.title }}</span>
+                          <span style="width:8px;height:8px;border-radius:50%;background:{{ inc.prioDot }};flex:none;margin-top:4px"></span>
+                        </div>
+                        <div style="font-size:11.5px;color:#8b9694;margin-top:3px">{{ inc.location }}</div>
+                        <div style="display:flex;gap:6px;margin-top:7px">
+                          <span style="font:600 10px 'JetBrains Mono',monospace;color:#9aa5a2">{{ inc.id }}</span>
+                          <span style="display:inline-flex;padding:2px 8px;border-radius:20px;background:{{ inc.statusBg }};color:{{ inc.statusFg }};font:600 10px 'Inter',sans-serif">{{ inc.statusLabel }}</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabBQueue }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                <div style="display:inline-flex;background:#e7ede9;border-radius:24px;padding:3px">
+                  <sc-for list="{{ statusFiltersB }}" as="f" hint-placeholder-count="3">
+                    <div onClick="{{ f.onClick }}" style="cursor:pointer;padding:7px 16px;border-radius:20px;font:600 12px 'Inter',sans-serif;background:{{ f.selBg }};color:{{ f.selFg }}">{{ f.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="width:240px;height:34px;border-radius:8px;background:#fffdf8;border:1px solid rgba(20,35,31,.1);color:#9aa5a2;font-size:12px;display:flex;align-items:center;padding:0 12px">Search incidents…</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ incidentsB }}" as="inc" hint-placeholder-count="8">
+                  <div onClick="{{ inc.onClick }}" style="cursor:pointer;background:#fffdf8;border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06);display:flex;align-items:center;gap:16px" style-hover="box-shadow:0 4px 14px rgba(20,35,31,.12)">
+                    <span style="width:34px;height:34px;border-radius:10px;background:{{ inc.catBg }};color:{{ inc.catFg }};font:700 11px 'JetBrains Mono',monospace;display:grid;place-items:center;flex:none">{{ inc.catShort }}</span>
+                    <div style="flex:1">
+                      <div style="font:700 13.5px 'Inter',sans-serif;color:#14231f">{{ inc.title }}</div>
+                      <div style="font:500 12px 'Inter',sans-serif;color:#78827f;margin-top:2px">{{ inc.location }} · {{ inc.id }}</div>
+                    </div>
+                    <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:{{ inc.prioBg }};color:{{ inc.prioFg }};font:600 11.5px 'Inter',sans-serif"><span style="width:6px;height:6px;border-radius:50%;background:{{ inc.prioDot }}"></span>{{ inc.prioLabel }}</span>
+                    <span style="display:inline-flex;padding:4px 10px;border-radius:20px;background:{{ inc.statusBg }};color:{{ inc.statusFg }};font:600 11.5px 'Inter',sans-serif">{{ inc.statusLabel }}</span>
+                    <span style="font:600 11.5px 'Inter',sans-serif;color:#78827f;background:#e7ede9;padding:4px 10px;border-radius:20px">{{ inc.linked }} linked</span>
+                    <span style="color:#c3cac7;font-size:16px">›</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabBDetail }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:860px;margin:0 auto">
+              <div onClick="{{ navB.queue.onClick }}" style="cursor:pointer;font:600 11.5px 'Inter',sans-serif;color:#ff5c35;margin-bottom:14px">&larr; Back to incidents</div>
+              <div style="font:600 11px 'JetBrains Mono',monospace;color:#9aa5a2;margin-bottom:6px">{{ detailB.id }}</div>
+              <h2 style="margin:0 0 10px;font-size:24px;color:#14231f;letter-spacing:-.01em">{{ detailB.title }}</h2>
+              <div style="display:flex;gap:8px;margin-bottom:18px">
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:{{ detailB.prioBg }};color:{{ detailB.prioFg }};font:600 12px 'Inter',sans-serif"><span style="width:6px;height:6px;border-radius:50%;background:{{ detailB.prioDot }}"></span>{{ detailB.prioLabel }}</span>
+                <span style="display:inline-flex;padding:5px 10px;border-radius:20px;background:{{ detailB.statusBg }};color:{{ detailB.statusFg }};font:600 12px 'Inter',sans-serif">{{ detailB.statusLabel }}</span>
+                <span style="display:inline-flex;padding:5px 10px;border-radius:20px;background:{{ detailB.catBg }};color:{{ detailB.catFg }};font:600 12px 'Inter',sans-serif">{{ detailB.catLabel }}</span>
+              </div>
+              <div style="display:flex;gap:10px;margin-bottom:20px">
+                <button style="padding:10px 20px;border-radius:8px;border:none;background:#14231f;color:#fff;font:700 12.5px 'Inter',sans-serif;cursor:pointer">Approve</button>
+                <button style="padding:10px 20px;border-radius:8px;border:1px solid rgba(20,35,31,.2);background:#fffdf8;color:#14231f;font:700 12.5px 'Inter',sans-serif;cursor:pointer">Merge duplicates</button>
+                <button style="padding:10px 20px;border-radius:8px;border:1px solid rgba(20,35,31,.2);background:transparent;color:#b5352a;font:700 12.5px 'Inter',sans-serif;cursor:pointer">Dismiss</button>
+              </div>
+              <div style="display:flex;gap:4px;border-bottom:1px solid rgba(20,35,31,.1);margin-bottom:18px">
+                <div onClick="{{ subTabsB.summary.onClick }}" style="cursor:pointer;padding:9px 6px;margin-right:18px;font:600 13px 'Inter',sans-serif;color:{{ subTabsB.summary.fg }};border-bottom:2px solid {{ subTabsB.summary.accent }}">Summary</div>
+                <div onClick="{{ subTabsB.details.onClick }}" style="cursor:pointer;padding:9px 6px;margin-right:18px;font:600 13px 'Inter',sans-serif;color:{{ subTabsB.details.fg }};border-bottom:2px solid {{ subTabsB.details.accent }}">Details</div>
+                <div onClick="{{ subTabsB.transcript.onClick }}" style="cursor:pointer;padding:9px 6px;margin-right:18px;font:600 13px 'Inter',sans-serif;color:{{ subTabsB.transcript.fg }};border-bottom:2px solid {{ subTabsB.transcript.accent }}">Transcript &amp; duplicates</div>
+                <div onClick="{{ subTabsB.activity.onClick }}" style="cursor:pointer;padding:9px 6px;font:600 13px 'Inter',sans-serif;color:{{ subTabsB.activity.fg }};border-bottom:2px solid {{ subTabsB.activity.accent }}">Activity</div>
+              </div>
+
+              <sc-if value="{{ subTabBSummary }}" hint-placeholder-val="{{ true }}">
+                <div style="background:#fffdf8;border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#397554;margin-bottom:10px">AI-GENERATED SUMMARY</div>
+                  <p style="margin:0;font-size:15px;line-height:1.6;color:#2b3532">{{ detailB.summary }}</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ subTabBDetails }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fffdf8;border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(20,35,31,.06);display:grid;grid-template-columns:1fr 1fr;gap:18px">
+                  <sc-for list="{{ detailB.fields }}" as="fl" hint-placeholder-count="4">
+                    <div><div style="font:600 11px 'Inter',sans-serif;color:#9aa5a2;text-transform:uppercase;letter-spacing:.04em">{{ fl.k }}</div><div style="font:500 14px 'Inter',sans-serif;color:#14231f;margin-top:3px">{{ fl.v }}</div></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ subTabBTranscript }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div style="background:#fffdf8;border-radius:14px;padding:20px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                    <sc-for list="{{ detailB.transcript }}" as="ln" hint-placeholder-count="4">
+                      <div style="display:grid;grid-template-columns:80px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid rgba(20,35,31,.06)">
+                        <span style="font:700 10px 'JetBrains Mono',monospace;text-transform:uppercase;color:{{ ln.color }}">{{ ln.role }}</span>
+                        <p style="margin:0;font-size:13.5px;line-height:1.55;color:#2b3532">{{ ln.text }}</p>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="background:#fffdf8;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                    <div style="font:700 11px 'Inter',sans-serif;color:#14231f;margin-bottom:10px">Linked calls (auto-grouped duplicates)</div>
+                    <sc-for list="{{ detailB.linkedCalls }}" as="lc" hint-placeholder-count="3">
+                      <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(20,35,31,.06);font-size:12.5px">
+                        <span style="font:600 11.5px 'JetBrains Mono',monospace;color:#14231f">{{ lc.id }}</span>
+                        <span style="color:#78827f">{{ lc.time }} · {{ lc.dur }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ subTabBActivity }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fffdf8;border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                  <sc-for list="{{ detailB.activity }}" as="ev" hint-placeholder-count="3">
+                    <div style="display:flex;gap:10px;padding:9px 0;border-top:1px solid rgba(20,35,31,.06);font-size:13px;color:#3f4a47"><span style="width:7px;height:7px;border-radius:50%;background:#397554;margin-top:5px;flex:none"></span>{{ ev }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabBCalls }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:920px;margin:0 auto">
+              <div style="font:600 12.5px 'Inter',sans-serif;color:#5b6664;margin-bottom:16px">Every call is recorded here — only actionable municipal issues become incidents.</div>
+              <div style="position:relative;padding-left:20px">
+                <div style="position:absolute;left:4px;top:6px;bottom:6px;width:2px;background:rgba(20,35,31,.1)"></div>
+                <sc-for list="{{ calls }}" as="c" hint-placeholder-count="8">
+                  <div style="position:relative;margin-bottom:14px">
+                    <div style="position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;background:{{ c.outFg }}"></div>
+                    <div style="background:#fffdf8;border-radius:12px;padding:14px 18px;box-shadow:0 1px 2px rgba(20,35,31,.06)">
+                      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                        <span style="font:700 12px 'JetBrains Mono',monospace;color:#14231f">{{ c.id }}</span>
+                        <span style="font:600 11px 'Inter',sans-serif;color:#9aa5a2">{{ c.time }} · {{ c.duration }}</span>
+                      </div>
+                      <div style="font-size:13px;color:#2b3532;margin-bottom:6px">{{ c.issue }}</div>
+                      <span style="display:inline-flex;padding:3px 9px;border-radius:20px;background:{{ c.outBg }};color:{{ c.outFg }};font:600 11px 'Inter',sans-serif">{{ c.outLabel }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabBLive }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:680px;margin:0 auto">
+              <div style="background:#fffdf8;border-radius:20px;padding:26px;box-shadow:0 8px 30px -10px rgba(20,35,31,.2)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="width:9px;height:9px;border-radius:50%;background:#ff5c35;animation:r311-pulse 1.2s infinite"></span>
+                    <span style="font:700 13px 'Inter',sans-serif;color:#14231f">Live call · 00:47</span>
+                  </div>
+                  <span style="font:500 12px 'JetBrains Mono',monospace;color:#78827f">(416) ***-0192</span>
+                </div>
+                <div style="display:flex;gap:4px;align-items:center;justify-content:center;height:56px;background:#e7ede9;border-radius:10px;margin-bottom:16px">
+                  <sc-for list="{{ waveform }}" as="w" hint-placeholder-count="16">
+                    <span style="width:4px;background:#397554;border-radius:3px;height:14px;animation:r311-bar {{ w.dur }}s ease-in-out infinite;animation-delay:{{ w.delay }}s"></span>
+                  </sc-for>
+                </div>
+                <div style="max-height:230px;overflow:auto;margin-bottom:16px">
+                  <sc-for list="{{ liveTranscript }}" as="ln" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:80px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid rgba(20,35,31,.07)">
+                      <span style="font:700 10px 'JetBrains Mono',monospace;text-transform:uppercase;color:{{ ln.color }}">{{ ln.role }}</span>
+                      <p style="margin:0;font-size:13.5px;line-height:1.5;color:#2b3532">{{ ln.text }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+                  <sc-for list="{{ liveFields }}" as="lf" hint-placeholder-count="3">
+                    <span style="padding:6px 12px;border-radius:20px;background:#e7ede9;color:#14231f;font:600 12px 'Inter',sans-serif">{{ lf.k }}: {{ lf.v }}</span>
+                  </sc-for>
+                </div>
+                <div style="background:oklch(95% 0.05 80);border-radius:10px;padding:12px 14px;margin-bottom:18px">
+                  <span style="font:700 11px 'Inter',sans-serif;color:oklch(38% 0.12 80)">⚠ Possible duplicate of INC-2227</span>
+                  <span style="font:400 12px 'Inter',sans-serif;color:oklch(32% 0.08 80)"> — will auto-link on call end.</span>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button style="flex:1;padding:12px;border-radius:10px;border:none;background:#ff5c35;color:#fff;font:700 13px 'Inter',sans-serif;cursor:pointer">End Call</button>
+                  <button style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(20,35,31,.2);background:transparent;color:#14231f;font:700 13px 'Inter',sans-serif;cursor:pointer">Escalate to 911 line</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p style="margin:26px 0 0;font:12px/1.5 'Inter',sans-serif;color:#78827f;max-width:760px">Try next: "make <a href="#1a">1a</a>'s detail view split like <a href="#1a">1a</a> but with <a href="#1b">1b</a>'s rounder cards" · "show a duplicate-merge confirmation modal" · "add a dark mode variant"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CATS = {
+  POTHOLE:{label:'Pothole',short:'PH',hue:25},
+  WATER:{label:'Water Main',short:'WM',hue:220},
+  TREE:{label:'Downed Tree',short:'TR',hue:140},
+  DUMPING:{label:'Illegal Dumping',short:'ID',hue:280},
+  LIGHT:{label:'Streetlight',short:'SL',hue:80},
+  NOISE:{label:'Noise Complaint',short:'NC',hue:340},
+  GRAFFITI:{label:'Graffiti',short:'GR',hue:190},
+  VEHICLE:{label:'Abandoned Vehicle',short:'AV',hue:260},
+};
+const PRIOS = {
+  critical:{label:'Critical',bg:'oklch(93% 0.06 25)',fg:'oklch(38% 0.17 25)',dot:'oklch(52% 0.19 25)',order:0},
+  high:{label:'High',bg:'oklch(94% 0.05 35)',fg:'oklch(40% 0.15 35)',dot:'#ff5c35',order:1},
+  medium:{label:'Medium',bg:'oklch(95% 0.05 80)',fg:'oklch(42% 0.12 80)',dot:'oklch(72% 0.14 80)',order:2},
+  low:{label:'Low',bg:'oklch(95% 0.01 220)',fg:'oklch(42% 0.02 220)',dot:'oklch(60% 0.02 220)',order:3},
+};
+const STATUSES = {
+  new:{label:'New',bg:'oklch(94% 0.04 250)',fg:'oklch(40% 0.13 250)'},
+  review:{label:'In Review',bg:'oklch(95% 0.05 90)',fg:'oklch(42% 0.12 90)'},
+  assigned:{label:'Assigned',bg:'oklch(94% 0.05 300)',fg:'oklch(42% 0.12 300)'},
+  resolved:{label:'Resolved',bg:'oklch(94% 0.05 150)',fg:'oklch(38% 0.12 150)'},
+  dismissed:{label:'Dismissed',bg:'oklch(95% 0.01 250)',fg:'oklch(45% 0.02 250)'},
+};
+
+const RAW_INCIDENTS = [
+  {id:'INC-2231',category:'POTHOLE',title:'Large pothole causing traffic hazard',location:'Danforth Ave & Broadview Ave',priority:'high',status:'new',linked:3,updated:'4m ago',assignee:'Unassigned',mapX:34,mapY:58},
+  {id:'INC-2229',category:'WATER',title:'Water main break flooding roadway',location:'Bloor St W & Dufferin St',priority:'critical',status:'assigned',linked:5,updated:'12m ago',assignee:'M. Osei',mapX:62,mapY:30},
+  {id:'INC-2227',category:'TREE',title:'Downed tree blocking sidewalk',location:'Kingston Rd near Main St',priority:'medium',status:'review',linked:2,updated:'26m ago',assignee:'Unassigned',mapX:78,mapY:70},
+  {id:'INC-2224',category:'DUMPING',title:'Illegal dumping in laneway',location:'Rear laneway, Ossington Ave',priority:'low',status:'new',linked:1,updated:'41m ago',assignee:'Unassigned',mapX:22,mapY:40},
+  {id:'INC-2221',category:'LIGHT',title:'Streetlight outage, block-long',location:'Queen St E & Woodbine Ave',priority:'low',status:'resolved',linked:1,updated:'2h ago',assignee:'J. Park',mapX:70,mapY:44},
+  {id:'INC-2219',category:'NOISE',title:'Construction noise after permitted hours',location:'College St & Spadina Ave',priority:'medium',status:'dismissed',linked:1,updated:'3h ago',assignee:'\u2014',mapX:44,mapY:20},
+  {id:'INC-2217',category:'GRAFFITI',title:'Graffiti on transit shelter',location:'Yonge St & Eglinton Ave',priority:'low',status:'review',linked:2,updated:'5h ago',assignee:'Unassigned',mapX:52,mapY:52},
+  {id:'INC-2214',category:'VEHICLE',title:'Abandoned vehicle, 5+ days',location:'Dundas St W & Roncesvalles Ave',priority:'medium',status:'assigned',linked:1,updated:'6h ago',assignee:'M. Osei',mapX:15,mapY:66},
+];
+
+const RAW_CALLS = [
+  {id:'C-10432',time:'8:14 AM',duration:'1:12',caller:'***-0192',issue:'Pothole causing cars to swerve into oncoming lane',outcome:'linked',linkedId:'INC-2231'},
+  {id:'C-10431',time:'8:20 AM',duration:'0:47',caller:'***-0847',issue:'Asked about garbage collection schedule (info only)',outcome:'none'},
+  {id:'C-10430',time:'8:31 AM',duration:'0:58',caller:'***-2210',issue:'Same pothole, second report near Broadview',outcome:'linked',linkedId:'INC-2231'},
+  {id:'C-10429',time:'8:40 AM',duration:'0:33',caller:'***-5561',issue:'Mentioned smell of gas near a home',outcome:'escalated'},
+  {id:'C-10428',time:'8:52 AM',duration:'1:34',caller:'***-9034',issue:'Third caller confirming pothole location',outcome:'linked',linkedId:'INC-2231'},
+  {id:'C-10427',time:'9:03 AM',duration:'2:05',caller:'***-1187',issue:"Water flooding the road, can't drive through",outcome:'linked',linkedId:'INC-2229'},
+  {id:'C-10426',time:'9:15 AM',duration:'0:41',caller:'***-7702',issue:'Wrong number, hung up',outcome:'none'},
+  {id:'C-10425',time:'9:22 AM',duration:'1:50',caller:'***-3348',issue:'Tree branch down blocking half the sidewalk',outcome:'linked',linkedId:'INC-2227'},
+];
+
+const OUTCOME_STYLE = {
+  linked:{label:'Linked to incident',bg:'oklch(94% 0.05 150)',fg:'oklch(38% 0.12 150)'},
+  none:{label:'No action needed',bg:'oklch(95% 0.01 250)',fg:'oklch(45% 0.02 250)'},
+  escalated:{label:'Escalated to 911',bg:'oklch(93% 0.06 25)',fg:'oklch(38% 0.17 25)'},
+};
+
+function withMeta(inc) {
+  const cat = CATS[inc.category], pr = PRIOS[inc.priority], st = STATUSES[inc.status];
+  return { ...inc,
+    catLabel: cat.label, catShort: cat.short, catBg: `oklch(92% 0.05 ${cat.hue})`, catFg: `oklch(32% 0.1 ${cat.hue})`,
+    prioLabel: pr.label, prioBg: pr.bg, prioFg: pr.fg, prioDot: pr.dot,
+    statusLabel: st.label, statusBg: st.bg, statusFg: st.fg };
+}
+
+function buildDetail(inc) {
+  const overrides = {
+    'INC-2231': {
+      summary: "Caller reports a large pothole in the eastbound curb lane on Danforth Ave near Broadview, causing vehicles to swerve into the oncoming lane. No injuries reported. Three separate callers described the same location within 40 minutes \u2014 automatically grouped as one incident.",
+      fields: [
+        {k:'Category', v:'Pothole'},
+        {k:'Location', v:'Danforth Ave & Broadview Ave, eastbound curb lane'},
+        {k:'Reported hazard', v:'Vehicles swerving into oncoming lane'},
+        {k:'First reported', v:'Today, 8:14 AM'},
+      ],
+      linkedCalls: [{id:'C-10432',time:'8:14 AM',dur:'1:12'},{id:'C-10430',time:'8:31 AM',dur:'0:58'},{id:'C-10428',time:'8:52 AM',dur:'1:34'}],
+      transcript: [
+        {role:'Caller', color:'#397554', text:"There's a huge pothole on Danforth, right near Broadview. Cars are swerving around it into my lane."},
+        {role:'Relay311', color:'#ff5c35', text:'Got it \u2014 a large pothole on Danforth Avenue near Broadview Avenue. Can you confirm which side of the street?'},
+        {role:'Caller', color:'#397554', text:"Eastbound side, right in the curb lane."},
+        {role:'Relay311', color:'#ff5c35', text:'Thank you for calling Relay311. Your report has been recorded.'},
+      ],
+      activity: ['Report received via AI intake (8:14 AM)','AI created incident, priority set to High','2 duplicate calls auto-linked','Awaiting operator review'],
+    },
+    'INC-2227': {
+      summary: 'Caller reports a downed tree branch blocking most of the sidewalk near the plaza entrance on Kingston Road. A second caller confirmed the same obstruction 20 minutes later.',
+      fields: [
+        {k:'Category', v:'Downed Tree'},
+        {k:'Location', v:'Kingston Rd near Main St, plaza entrance'},
+        {k:'Reported hazard', v:'Sidewalk blocked, pedestrian detour needed'},
+        {k:'First reported', v:'Today, 9:22 AM'},
+      ],
+      linkedCalls: [{id:'C-10425',time:'9:22 AM',dur:'1:50'},{id:'C-10433',time:'9:41 AM',dur:'1:05'}],
+      transcript: [
+        {role:'Caller', color:'#397554', text:'There\u2019s a big tree branch down, blocking most of the sidewalk on Kingston Road.'},
+        {role:'Relay311', color:'#ff5c35', text:'Got it \u2014 a downed tree branch blocking the sidewalk. Can you confirm the nearest cross street?'},
+        {role:'Caller', color:'#397554', text:'Yeah, it\u2019s right near Main Street, close to the plaza entrance.'},
+      ],
+      activity: ['Report received via AI intake (9:22 AM)','AI created incident, priority set to Medium','Second call flagged as likely duplicate, pending confirmation','Operator review in progress'],
+    },
+  };
+  if (overrides[inc.id]) return overrides[inc.id];
+  return {
+    summary: `AI-generated summary: ${inc.title} reported near ${inc.location}. ${inc.linked} caller${inc.linked>1?'s':''} described a matching issue; details below were extracted automatically from the call transcript.`,
+    fields: [
+      {k:'Category', v:CATS[inc.category].label},
+      {k:'Location', v:inc.location},
+      {k:'Last updated', v:inc.updated},
+      {k:'Assigned to', v:inc.assignee},
+    ],
+    linkedCalls: Array.from({length:inc.linked}, (_,i)=>({id:`C-104${20-i}`, time:`${8+i}:0${i} AM`, dur:'1:0'+(i+1)})),
+    transcript: [
+      {role:'Caller', color:'#397554', text:`Hi, I want to report ${inc.title.toLowerCase()} near ${inc.location}.`},
+      {role:'Relay311', color:'#ff5c35', text:'Thank you for calling Relay311. Your report has been recorded.'},
+    ],
+    activity: ['Report received via AI intake', 'AI created incident and set priority', `Current status: ${STATUSES[inc.status].label}`],
+  };
+}
+
+class Component extends DCLogic {
+  state = { tabA:'home', tabB:'home', selA:'INC-2231', selB:'INC-2231', filterA:'all', filterB:'all', subTabB:'summary' };
+
+  setTab(which, tab) { this.setState({ ['tab'+which]: tab }); }
+  selectIncident(which, id) { this.setState({ ['sel'+which]: id, ['tab'+which]: 'detail' }); }
+  setFilter(which, f) { this.setState({ ['filter'+which]: f }); }
+  setSubTabB(t) { this.setState({ subTabB: t }); }
+
+  navEntry(which, key, label, currentTab) {
+    const active = currentTab === key;
+    return {
+      label,
+      onClick: () => this.setTab(which, key),
+      accent: active ? '#ff5c35' : 'transparent',
+      bg: active ? 'rgba(255,92,53,.1)' : 'transparent',
+      fg: active ? '#ffffff' : '#a9bab5',
+    };
+  }
+  navEntryB(key, label, currentTab) {
+    const active = currentTab === key;
+    return { label, onClick: () => this.setTab('B', key), accent: active ? '#ff5c35' : 'transparent', fg: active ? '#14231f' : '#78827f' };
+  }
+
+  renderVals() {
+    const incidentsMeta = RAW_INCIDENTS.map(withMeta);
+    const filterFor = (which, f) => f === 'all' ? incidentsMeta : incidentsMeta.filter(i => i.status === f);
+    const withClick = (list, which) => list.map(i => ({ ...i, onClick: () => this.selectIncident(which, i.id) }));
+
+    const incidentsA = withClick(filterFor('A', this.state.filterA), 'A');
+    const incidentsB = withClick(filterFor('B', this.state.filterB), 'B');
+
+    const calls = RAW_CALLS.map(c => {
+      const o = OUTCOME_STYLE[c.outcome];
+      return { ...c, outLabel: c.linkedId ? `${o.label} \u00b7 ${c.linkedId}` : o.label, outBg: o.bg, outFg: o.fg };
+    });
+
+    const priorityBars = ['critical','high','medium','low'].map(k => {
+      const count = RAW_INCIDENTS.filter(i => i.priority === k).length;
+      return { label: PRIOS[k].label, dot: PRIOS[k].dot, count, pct: Math.round((count / RAW_INCIDENTS.length) * 100) };
+    });
+
+    const selectedA = RAW_INCIDENTS.find(i => i.id === this.state.selA) || RAW_INCIDENTS[0];
+    const selectedB = RAW_INCIDENTS.find(i => i.id === this.state.selB) || RAW_INCIDENTS[0];
+    const detailA = { ...withMeta(selectedA), ...buildDetail(selectedA), location: selectedA.location };
+    const detailB = { ...withMeta(selectedB), ...buildDetail(selectedB), location: selectedB.location };
+
+    const statusOptions = [['all','All'],['new','New'],['review','In Review'],['assigned','Assigned'],['resolved','Resolved'],['dismissed','Dismissed']];
+    const statusFiltersA = statusOptions.map(([k,label]) => {
+      const active = this.state.filterA === k;
+      return { label, onClick: () => this.setFilter('A', k), bg: active ? '#14231f' : 'transparent', fg: active ? '#fff' : '#5b6664', border: active ? '#14231f' : 'rgba(20,35,31,.15)' };
+    });
+    const statusFiltersB = [['all','All'],['new','Open'],['resolved','Resolved']].map(([k,label]) => {
+      const active = this.state.filterB === k;
+      return { label, onClick: () => this.setFilter('B', k), selBg: active ? '#fffdf8' : 'transparent', selFg: active ? '#14231f' : '#78827f' };
+    });
+
+    const waveform = Array.from({length:16}, (_,i) => ({ dur: (0.7 + (i % 5) * 0.15).toFixed(2), delay: (i * 0.06).toFixed(2) }));
+
+    const liveTranscript = [
+      {role:'Relay311', color:'#397554', colorDark:'#8ba39d', text:"Hello, you've reached Relay311, the AI municipal service intake line. If anyone is in immediate danger, hang up and call 911. What municipal issue are you reporting today?"},
+      {role:'Caller', color:'#ff5c35', colorDark:'#ffb199', text:"Hi, um, there's a big tree branch down blocking most of the sidewalk on Kingston Road."},
+      {role:'Relay311', color:'#397554', colorDark:'#8ba39d', text:'Got it \u2014 a downed tree branch blocking the sidewalk. Can you confirm the exact location, like the nearest cross street?'},
+      {role:'Caller', color:'#ff5c35', colorDark:'#ffb199', text:"Yeah it's right near Main Street, close to the entrance of the plaza."},
+    ];
+    const liveFields = [
+      {k:'Category', v:'Downed Tree'},
+      {k:'Location', v:'Kingston Rd near Main St'},
+      {k:'Hazard', v:'Sidewalk blocked'},
+    ];
+
+    const activityFeedA = [
+      {time:'2m', text:'INC-2231 auto-created from 3 matching calls'},
+      {time:'8m', text:'INC-2229 escalated to Critical priority'},
+      {time:'14m', text:'Operator M. Osei assigned INC-2229'},
+      {time:'26m', text:'AI flagged possible duplicate on Kingston Rd'},
+      {time:'41m', text:'INC-2224 logged, awaiting triage'},
+    ];
+    const needsAttention = [
+      {title:'INC-2229 \u00b7 Water main break', note:'Critical \u00b7 5 linked calls'},
+      {title:'INC-2231 \u00b7 Pothole hazard', note:'High \u00b7 unassigned'},
+      {title:'INC-2227 \u00b7 Downed tree', note:'Possible duplicate incoming'},
+    ];
+    const recentCallsB = calls.slice(0,4).map(c => ({ id:c.id, time:c.time, issue:c.issue }));
+
+    const navA = {
+      home: this.navEntry('A','home','Home', this.state.tabA),
+      queue: this.navEntry('A','queue','Incident Queue', this.state.tabA),
+      calls: this.navEntry('A','calls','Calls & History', this.state.tabA),
+      live: this.navEntry('A','live','Live Call', this.state.tabA),
+    };
+    const navB = {
+      home: this.navEntryB('home','Home', this.state.tabB),
+      queue: this.navEntryB('queue','Incidents', this.state.tabB),
+      calls: this.navEntryB('calls','Calls', this.state.tabB),
+      live: this.navEntryB('live','Live Call', this.state.tabB),
+    };
+    const subTabEntry = (key, label) => {
+      const active = this.state.subTabB === key;
+      return { onClick: () => this.setSubTabB(key), fg: active ? '#14231f' : '#9aa5a2', accent: active ? '#ff5c35' : 'transparent' };
+    };
+    const subTabsB = { summary: subTabEntry('summary'), details: subTabEntry('details'), transcript: subTabEntry('transcript'), activity: subTabEntry('activity') };
+
+    return {
+      incidentsA, incidentsB, calls, priorityBars, detailA, detailB, statusFiltersA, statusFiltersB,
+      waveform, liveTranscript, liveFields, activityFeedA, needsAttention, recentCallsB,
+      navA, navB, subTabsB,
+      openCount: RAW_INCIDENTS.filter(i => i.status !== 'resolved' && i.status !== 'dismissed').length,
+      tabAHome: this.state.tabA === 'home', tabAQueue: this.state.tabA === 'queue', tabADetail: this.state.tabA === 'detail', tabACalls: this.state.tabA === 'calls', tabALive: this.state.tabA === 'live',
+      tabBHome: this.state.tabB === 'home', tabBQueue: this.state.tabB === 'queue', tabBDetail: this.state.tabB === 'detail', tabBCalls: this.state.tabB === 'calls', tabBLive: this.state.tabB === 'live',
+      subTabBSummary: this.state.subTabB === 'summary', subTabBDetails: this.state.subTabB === 'details', subTabBTranscript: this.state.subTabB === 'transcript', subTabBActivity: this.state.subTabB === 'activity',
+    };
+  }
+}
+</script>
+</body>
+</html>
