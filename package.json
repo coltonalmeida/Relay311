@@ -12,7 +12,9 @@
     "vapi:configure": "node --env-file=.env scripts/configure-vapi-operator.mjs",
     "transcripts:backfill": "node scripts/backfill-transcript-messages.mjs",
     "transcripts:sync": "node --env-file=.env scripts/watch-vapi-transcripts.mjs --once",
-    "transcripts:watch": "node --env-file=.env scripts/watch-vapi-transcripts.mjs"
+    "transcripts:watch": "node --env-file=.env scripts/watch-vapi-transcripts.mjs",
+    "seed": "node --env-file=.env scripts/seed.mjs",
+    "seed:clear": "node --env-file=.env scripts/seed.mjs --clear"
   },
   "dependencies": {
     "@google/genai": "^2.23.0",
