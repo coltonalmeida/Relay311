@@ -72,24 +72,6 @@ export function derivePriority(report: StructuredReport): Priority {
   return "medium";
 }
 
-function fnv1a(input: string): number {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= input.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return hash >>> 0;
-}
-
-export function pseudoGeocode(seed: string): { xPct: number; yPct: number } {
-  const hash = fnv1a(seed);
-  const a = hash & 0xffff;
-  const b = (hash >>> 16) & 0xffff;
-  const xPct = 8 + (a / 0xffff) * 84;
-  const yPct = 8 + (b / 0xffff) * 84;
-  return { xPct, yPct };
-}
-
 function normalizeLocation(raw: string): string[] {
   return raw
     .toLowerCase()

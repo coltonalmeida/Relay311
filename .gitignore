@@ -243,3 +243,6 @@ next-env.d.ts
 # Local Vapi call transcripts can contain personal information
 data/transcripts/*.json
 data/transcripts/*.txt
+
+# Copied from node_modules/maplibre-gl by scripts/copy-maplibre-worker.mjs
+public/maplibre/

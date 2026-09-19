@@ -1,3 +1,4 @@
+import { withCoordinates } from "../geocode";
 import { findDuplicateCandidate } from "../incident-heuristics";
 import type { CallRecord, CreateCallInput, IncidentRecord } from "../schemas";
 import { supabase } from "../supabase";
@@ -94,7 +95,8 @@ export async function createCallWithClassification(input: CreateCallInput): Prom
   const rawCallId = rawCall.id as string;
 
   try {
-    const report = await processTranscript(input.transcript);
+    const classified = await processTranscript(input.transcript);
+    const report = classified.actionable ? await withCoordinates(classified) : classified;
     let incident: IncidentRecord | null = null;
     let linkedExistingIncident = false;
 
