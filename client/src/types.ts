@@ -18,6 +18,16 @@ export interface CallRecord {
   transcript: string
   startedAt: string | null
   durationSeconds: number | null
+  provider: string | null
+  providerRecordId: string | null
+  phoneNumberId: string | null
+  assistantId: string | null
+  providerStatus: string | null
+  endedReason: string | null
+  providerCreatedAt: string | null
+  endedAt: string | null
+  receivedAt: string | null
+  textFile: string | null
   processingStatus: string
   processingError: string | null
   recordType: RecordType

@@ -6,6 +6,11 @@ type Row = Record<string, any>;
 const callFromRow = (r: Row): CallRecord => ({
   id: r.id, externalCallId: r.external_call_id, transcript: r.transcript,
   startedAt: r.started_at, durationSeconds: r.duration_seconds,
+  provider: r.provider, providerRecordId: r.provider_record_id,
+  phoneNumberId: r.phone_number_id, assistantId: r.assistant_id,
+  providerStatus: r.provider_status, endedReason: r.ended_reason,
+  providerCreatedAt: r.provider_created_at, endedAt: r.ended_at,
+  receivedAt: r.received_at, textFile: r.text_file,
   processingStatus: r.processing_status, processingError: r.processing_error ?? null, recordType: r.record_type,
   report: r.report as StructuredReport | null, incidentId: r.incident_id,
   createdAt: r.created_at, updatedAt: r.updated_at
@@ -26,6 +31,16 @@ export async function createCall(input: CreateCallInput): Promise<{ call: CallRe
     transcript: input.transcript,
     started_at: input.startedAt ?? null,
     duration_seconds: input.durationSeconds ?? null,
+    provider: input.provider ?? null,
+    provider_record_id: input.providerRecordId ?? null,
+    phone_number_id: input.phoneNumberId ?? null,
+    assistant_id: input.assistantId ?? null,
+    provider_status: input.providerStatus ?? null,
+    ended_reason: input.endedReason ?? null,
+    provider_created_at: input.providerCreatedAt ?? null,
+    ended_at: input.endedAt ?? null,
+    received_at: input.receivedAt ?? null,
+    text_file: input.textFile ?? null,
     processing_status: 'processing'
   }).select('*').single();
   check(inserted.error);

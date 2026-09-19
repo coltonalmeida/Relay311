@@ -6,6 +6,16 @@ create table if not exists public.calls (
   transcript text not null,
   started_at timestamptz,
   duration_seconds integer check (duration_seconds is null or duration_seconds >= 0),
+  provider text,
+  provider_record_id text,
+  phone_number_id text,
+  assistant_id text,
+  provider_status text,
+  ended_reason text,
+  provider_created_at timestamptz,
+  ended_at timestamptz,
+  received_at timestamptz,
+  text_file text,
   report jsonb,
   processing_status text not null default 'processing' check (processing_status in ('processing', 'processed', 'failed')),
   processing_error text,
@@ -16,6 +26,16 @@ create table if not exists public.calls (
 );
 
 alter table public.calls add column if not exists processing_error text;
+alter table public.calls add column if not exists provider text;
+alter table public.calls add column if not exists provider_record_id text;
+alter table public.calls add column if not exists phone_number_id text;
+alter table public.calls add column if not exists assistant_id text;
+alter table public.calls add column if not exists provider_status text;
+alter table public.calls add column if not exists ended_reason text;
+alter table public.calls add column if not exists provider_created_at timestamptz;
+alter table public.calls add column if not exists ended_at timestamptz;
+alter table public.calls add column if not exists received_at timestamptz;
+alter table public.calls add column if not exists text_file text;
 
 create table if not exists public.incidents (
   id uuid primary key default gen_random_uuid(),
@@ -39,6 +59,7 @@ do $$ begin
 end $$;
 create index if not exists calls_created_at_idx on public.calls(created_at desc);
 create index if not exists calls_record_type_idx on public.calls(record_type);
+create index if not exists calls_provider_call_idx on public.calls(provider, external_call_id);
 create index if not exists incidents_status_created_at_idx on public.incidents(status, created_at desc);
 create index if not exists incidents_category_idx on public.incidents(category);
 

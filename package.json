@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server/index.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "npm run build && node --test dist/server/services/transcriptProcessor.test.js"
+    "test": "npm run build && node --test dist/server/services/transcriptProcessor.test.js dist/shared/schemas.test.js"
   },
   "dependencies": {
     "@google/genai": "^2.23.0",

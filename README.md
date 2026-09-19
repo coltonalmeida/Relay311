@@ -36,20 +36,37 @@ request timeout, and maximum attempts with the variables documented in
 
 ## Integration contracts
 
-Colton's Vapi integration should send a completed call to `POST /api/calls`:
+Colton's Vapi integration can send its completed-call output directly to
+`POST /api/calls`:
 
 ```json
 {
-  "externalCallId": "provider-call-id",
+  "id": "vapi-provider-record-id",
+  "provider": "vapi",
+  "callId": "provider-call-id",
+  "phoneNumberId": "phone-number-id",
+  "assistantId": "assistant-id",
+  "status": "ended",
+  "endedReason": "customer-ended-call",
+  "createdAt": "2026-09-19T15:29:59.000Z",
   "transcript": "The complete raw transcript",
   "startedAt": "2026-09-19T15:30:00.000Z",
-  "durationSeconds": 74
+  "endedAt": "2026-09-19T15:31:14.000Z",
+  "receivedAt": "2026-09-19T15:31:20.000Z",
+  "messages": [],
+  "textFile": "provider-call-id.txt"
 }
 ```
 
-Only `externalCallId` and `transcript` are required. The external ID must be
-unique, so webhook retries with the same ID will not create duplicate calls.
-This is ingestion idempotency, not municipal incident duplicate detection.
+The backend maps `callId` to its unique external call ID and derives duration
+from `startedAt` and `endedAt`. It stores useful Vapi metadata but deliberately
+does not persist `messages`; the canonical `transcript` is what Gemini processes.
+Unknown Vapi fields are tolerated so minor provider additions do not break the
+webhook. The original normalized development payload remains supported.
+
+The external call ID is unique, so webhook retries with the same ID will not
+create duplicate calls. This is ingestion protection, not municipal incident
+duplicate detection.
 
 Mark's dashboard can use `recordType` to separate incident calls from
 information-only history. A processed actionable call has an `incidentId` and
