@@ -99,10 +99,12 @@ update public.incidents set title =
 where title = '';
 
 -- Operator dashboard: fuller status vocabulary (new/in_review/assigned/resolved/dismissed).
+-- Drop the old constraint before remapping data, since 'new'/'assigned' aren't valid under it yet.
+alter table public.incidents drop constraint if exists incidents_status_check;
+
 update public.incidents set status = 'new' where status = 'pending';
 update public.incidents set status = 'assigned' where status = 'approved';
 
-alter table public.incidents drop constraint if exists incidents_status_check;
 alter table public.incidents add constraint incidents_status_check
   check (status in ('new', 'in_review', 'assigned', 'resolved', 'dismissed'));
 alter table public.incidents alter column status set default 'new';
