@@ -123,23 +123,24 @@ export async function POST(request: Request) {
           updateLiveCall(callId, { status: "in-progress" });
         }
       } else if (status === "ended") {
-        updateLiveCall(callId, { status: "ended", transcribing: false });
+        clearLiveCall(callId);
       }
     }
     return Response.json({ received: true, type: message.type });
   }
 
-  if (message.type === "transcript") {
-    if (callId) {
+  if (message.type === "transcript" || message.type === 'transcript[transcriptType="final"]') {
+    const transcriptCallId = callId ?? getLiveCall()?.callId ?? null;
+    if (transcriptCallId) {
       const role = message.role === "assistant" || message.role === "user" ? message.role : null;
       const text = typeof message.transcript === "string" ? message.transcript : "";
-      const isPartial = message.transcriptType !== "final";
+      const isPartial = message.type === "transcript" && message.transcriptType !== "final";
       if (role && text) {
-        appendLiveMessage(callId, { role, text, partial: isPartial });
+        appendLiveMessage(transcriptCallId, { role, text, partial: isPartial });
         if (!isPartial) {
           finalTranscriptTurnsSinceClassify += 1;
           if (finalTranscriptTurnsSinceClassify % 2 === 0) {
-            await refreshLiveExtraction(callId);
+            await refreshLiveExtraction(transcriptCallId);
           }
         }
       }
@@ -156,8 +157,15 @@ export async function POST(request: Request) {
     (typeof artifact?.transcript === "string" && artifact.transcript) ||
     (typeof message.transcript === "string" && message.transcript) ||
     "";
-  if (!callId || !transcript) {
-    return Response.json({ error: "End-of-call report is missing call ID or transcript" }, { status: 422 });
+  if (!callId) {
+    return Response.json({ error: "End-of-call report is missing call ID" }, { status: 422 });
+  }
+
+  // Always clear the live indicator, including calls where Vapi could not
+  // produce an artifact transcript.
+  clearLiveCall(callId);
+  if (!transcript) {
+    return Response.json({ received: true, type: message.type, transcriptSaved: false });
   }
 
   const customer = asRecord(call?.customer);
@@ -201,8 +209,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Unable to persist Vapi call to Supabase", error);
-  } finally {
-    clearLiveCall(callId);
   }
 
   return Response.json({ received: true, transcriptId: saved.id, textFile: saved.textFile });

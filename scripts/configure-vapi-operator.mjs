@@ -3,6 +3,8 @@ import path from "node:path";
 
 const apiKey = process.env.VAPI_PRIVATE_API_KEY;
 const assistantId = process.env.VAPI_ASSISTANT_ID;
+const appPublicUrl = process.env.APP_PUBLIC_URL?.replace(/\/$/, "");
+const webhookSecret = process.env.VAPI_WEBHOOK_SECRET;
 
 if (!apiKey || !assistantId) {
   console.error("VAPI_PRIVATE_API_KEY and VAPI_ASSISTANT_ID are required in .env.");
@@ -41,6 +43,20 @@ const update = {
       assistantName: "Relay311",
       userName: "Caller",
     },
+  },
+  server: {
+    ...current.server,
+    ...(appPublicUrl ? { url: `${appPublicUrl}/api/vapi/webhook` } : {}),
+    ...(webhookSecret ? { secret: webhookSecret } : {}),
+  },
+  serverMessages: [
+    "status-update",
+    "transcript",
+    "end-of-call-report",
+  ],
+  monitorPlan: {
+    ...current.monitorPlan,
+    controlEnabled: true,
   },
   endCallMessage: "Thank you for calling Relay311. Your report has been recorded. Goodbye for now.",
   endCallPhrases: ["goodbye for now"],

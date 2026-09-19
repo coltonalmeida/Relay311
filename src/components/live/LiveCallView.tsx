@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TranscriptLine from "@/components/transcript/TranscriptLine";
 import { PRIORITY_TOKENS } from "@/lib/design-tokens";
 import type { LiveCallState } from "@/lib/live-call-state";
@@ -16,6 +16,13 @@ function formatElapsed(startedAt: string, now: number): string {
 export default function LiveCallView() {
   const [call, setCall] = useState<LiveCallState | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [ending, setEnding] = useState(false);
+  const [endError, setEndError] = useState<string | null>(null);
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
+  const latestMessage = call?.messages.at(-1);
+  const transcriptRevision = latestMessage
+    ? `${call?.callId}:${call?.messages.length}:${latestMessage.role}:${latestMessage.text}`
+    : "";
 
   useEffect(() => {
     let cancelled = false;
@@ -39,10 +46,36 @@ export default function LiveCallView() {
     };
   }, []);
 
+  async function endCall() {
+    if (!call || ending) return;
+    setEnding(true);
+    setEndError(null);
+    try {
+      const response = await fetch("/api/live-call", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ callId: call.callId }),
+      });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(data.error || "Unable to end the call.");
+      setCall(null);
+    } catch (error) {
+      setEndError(error instanceof Error ? error.message : "Unable to end the call.");
+    } finally {
+      setEnding(false);
+    }
+  }
+
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const transcriptPanel = transcriptScrollRef.current;
+    if (!transcriptPanel || !transcriptRevision) return;
+    transcriptPanel.scrollTo({ top: transcriptPanel.scrollHeight, behavior: "smooth" });
+  }, [transcriptRevision]);
 
   if (!call) {
     return (
@@ -84,7 +117,10 @@ export default function LiveCallView() {
           <Waveform active={call.status !== "ended"} />
         </div>
 
-        <div className="mt-4 max-h-[280px] overflow-y-auto border-y border-hairline">
+        <div
+          ref={transcriptScrollRef}
+          className="mt-4 max-h-[280px] overflow-y-auto border-y border-hairline"
+        >
           {call.messages.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">Listening for the caller…</p>
           ) : (
@@ -127,8 +163,13 @@ export default function LiveCallView() {
         )}
 
         <div className="mt-5 flex gap-3">
-          <button type="button" className="flex-1 rounded-lg bg-signal py-3 text-sm font-bold text-paper">
-            End Call
+          <button
+            type="button"
+            onClick={endCall}
+            disabled={ending}
+            className="flex-1 rounded-lg bg-signal py-3 text-sm font-bold text-paper disabled:cursor-wait disabled:opacity-60"
+          >
+            {ending ? "Ending callâ€¦" : "End Call"}
           </button>
           <button
             type="button"
@@ -137,6 +178,7 @@ export default function LiveCallView() {
             Escalate to 911 line
           </button>
         </div>
+        {endError && <p className="mt-3 text-sm font-medium text-signal">{endError}</p>}
       </div>
     </div>
   );

@@ -32,18 +32,29 @@ export type LiveCallState = {
 // src/lib/transcripts.ts, which makes the same assumption) — it would need a shared
 // store (e.g. Supabase) instead if ever deployed as multiple serverless instances.
 let current: LiveCallState | null = null;
+let lastEventAt = 0;
+
+// The configured assistant has a 90-second maximum duration. If the final
+// provider event is lost, do not leave the operator UI stuck on a phantom call.
+const STALE_CALL_AFTER_MS = 3 * 60 * 1000;
 
 export function getLiveCall(): LiveCallState | null {
+  if (current && Date.now() - lastEventAt > STALE_CALL_AFTER_MS) {
+    current = null;
+    lastEventAt = 0;
+  }
   return current;
 }
 
 export function startLiveCall(state: LiveCallState): void {
   current = state;
+  lastEventAt = Date.now();
 }
 
 export function updateLiveCall(callId: string, patch: Partial<LiveCallState>): void {
   if (!current || current.callId !== callId) return;
   current = { ...current, ...patch };
+  lastEventAt = Date.now();
 }
 
 export function appendLiveMessage(callId: string, message: TranscriptMessage): void {
@@ -56,9 +67,11 @@ export function appendLiveMessage(callId: string, message: TranscriptMessage): v
     messages.push(message);
   }
   current = { ...current, messages, transcribing: Boolean(message.partial) };
+  lastEventAt = Date.now();
 }
 
 export function clearLiveCall(callId?: string): void {
   if (callId && current?.callId !== callId) return;
   current = null;
+  lastEventAt = 0;
 }
