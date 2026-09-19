@@ -50,6 +50,12 @@ export async function getIncident(id: string): Promise<IncidentRecord | null> {
   return result.data ? incidentFromRow(result.data as Row) : null;
 }
 
+export async function deleteIncident(id: string): Promise<boolean> {
+  const result = await supabase.from("incidents").delete().eq("id", id).select("id").maybeSingle();
+  check(result.error);
+  return result.data !== null;
+}
+
 export async function getLinkedCallCount(incidentId: string): Promise<number> {
   const result = await supabase
     .from("calls")

@@ -40,24 +40,30 @@ export default function DetailView({
   activity: ActivityEntry[];
 }) {
   const [tab, setTab] = useState<Tab>("summary");
-  const [pending, setPending] = useState<"approve" | "dismiss" | "merge" | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  async function runAction(action: "approve" | "dismiss" | "merge") {
-    setPending(action);
+  async function removeIncident() {
+    const confirmed = window.confirm(
+      "Delete this incident? The original call and transcript will be kept.",
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
     setError(null);
     try {
-      const response = await fetch(`/api/incidents/${incident.id}/${action}`, { method: "POST" });
+      const response = await fetch(`/api/incidents/${incident.id}`, { method: "DELETE" });
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
         throw new Error(body?.error ?? `Request failed (${response.status})`);
       }
+      router.replace("/incidents");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
-      setPending(null);
+      setDeleting(false);
     }
   }
 
@@ -75,30 +81,14 @@ export default function DetailView({
         <CategoryChip category={incident.category} />
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
+      <div className="mt-5 flex justify-end">
         <button
           type="button"
-          disabled={pending !== null || incident.status === "assigned"}
-          onClick={() => void runAction("approve")}
-          className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-paper disabled:opacity-50"
+          disabled={deleting}
+          onClick={() => void removeIncident()}
+          className="text-sm font-semibold text-red-destructive disabled:opacity-50"
         >
-          {pending === "approve" ? "Approving…" : "Approve"}
-        </button>
-        <button
-          type="button"
-          disabled={pending !== null}
-          onClick={() => void runAction("merge")}
-          className="rounded-lg border border-hairline bg-paper px-4 py-2 text-sm font-semibold text-ink disabled:opacity-50"
-        >
-          {pending === "merge" ? "Merging…" : "Merge duplicates"}
-        </button>
-        <button
-          type="button"
-          disabled={pending !== null || incident.status === "dismissed"}
-          onClick={() => void runAction("dismiss")}
-          className="ml-auto text-sm font-semibold text-red-destructive disabled:opacity-50"
-        >
-          {pending === "dismiss" ? "Dismissing…" : "Dismiss"}
+          {deleting ? "Deleting…" : "Delete incident"}
         </button>
       </div>
       {error && <p className="mt-2 text-sm text-red-destructive">{error}</p>}
