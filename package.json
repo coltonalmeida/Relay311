@@ -15,6 +15,8 @@
     "transcripts:watch": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs"
   },
   "dependencies": {
+    "@google/genai": "^2.23.0",
+    "@supabase/supabase-js": "^2.116.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",

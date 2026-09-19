@@ -69,3 +69,40 @@ drop trigger if exists calls_set_updated_at on public.calls;
 create trigger calls_set_updated_at before update on public.calls for each row execute function public.set_updated_at();
 drop trigger if exists incidents_set_updated_at on public.incidents;
 create trigger incidents_set_updated_at before update on public.incidents for each row execute function public.set_updated_at();
+
+-- Operator dashboard: structured transcript + caller info on calls.
+alter table public.calls add column if not exists caller_phone text;
+alter table public.calls add column if not exists messages jsonb not null default '[]'::jsonb;
+
+-- Operator dashboard: title/priority/assignee on incidents.
+alter table public.incidents add column if not exists title text not null default '';
+alter table public.incidents add column if not exists priority text not null default 'medium';
+alter table public.incidents add column if not exists assignee text;
+
+alter table public.incidents drop constraint if exists incidents_priority_check;
+alter table public.incidents add constraint incidents_priority_check
+  check (priority in ('critical', 'high', 'medium', 'low'));
+
+-- Operator dashboard: fixed category taxonomy so category chip colors are always correct.
+-- Run before the title backfill below so backfilled titles use the new category label.
+update public.incidents set category = 'pothole'
+where category in ('roads', 'transportation') and (subtype ilike '%pothole%' or summary ilike '%pothole%');
+update public.incidents set category = 'other' where category not in
+  ('pothole', 'water', 'tree', 'dumping', 'streetlight', 'noise', 'graffiti', 'vehicle', 'other');
+
+alter table public.incidents drop constraint if exists incidents_category_check;
+alter table public.incidents add constraint incidents_category_check
+  check (category in ('pothole', 'water', 'tree', 'dumping', 'streetlight', 'noise', 'graffiti', 'vehicle', 'other'));
+
+update public.incidents set title =
+  initcap(replace(category, '-', ' ')) || ' — ' || coalesce(nullif(location->>'raw', ''), replace(subtype, '-', ' '))
+where title = '';
+
+-- Operator dashboard: fuller status vocabulary (new/in_review/assigned/resolved/dismissed).
+update public.incidents set status = 'new' where status = 'pending';
+update public.incidents set status = 'assigned' where status = 'approved';
+
+alter table public.incidents drop constraint if exists incidents_status_check;
+alter table public.incidents add constraint incidents_status_check
+  check (status in ('new', 'in_review', 'assigned', 'resolved', 'dismissed'));
+alter table public.incidents alter column status set default 'new';
