@@ -24,18 +24,33 @@ function safeCallId(callId) {
   return callId.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 200);
 }
 
-function normalizeMessages(call) {
+function conversationMessages(call, transcript) {
+  const assistantLabels = new Set(["ai", "assistant", "relay311", "relay 311"]);
+  const callerLabels = new Set(["caller", "customer", "user"]);
+  const messages = transcript.split(/\r?\n/).flatMap((line) => {
+    const match = line.match(/^([^:]{1,80}):\s*(.*)$/);
+    if (!match) return [];
+
+    const label = match[1].trim().toLowerCase();
+    const text = match[2].trim();
+    const role = assistantLabels.has(label)
+      ? "assistant"
+      : callerLabels.has(label)
+        ? "user"
+        : null;
+    return role && text ? [{ role, text }] : [];
+  });
+
+  const roles = new Set(messages.map((message) => message.role));
+  if (roles.has("assistant") && roles.has("user")) return messages;
+
   const source = call.artifact?.messages ?? call.messages ?? [];
   return source.flatMap((message) => {
     const role = message?.role;
     const text = message?.message ?? message?.content;
-    if (
-      ["assistant", "user", "system", "tool"].includes(role) &&
-      typeof text === "string"
-    ) {
-      return [{ role, text }];
-    }
-    return [];
+    return ["assistant", "user"].includes(role) && typeof text === "string"
+      ? [{ role, text }]
+      : [];
   });
 }
 
@@ -73,7 +88,7 @@ async function saveCall(call) {
     endedAt: call.endedAt ?? null,
     receivedAt: new Date().toISOString(),
     transcript,
-    messages: normalizeMessages(call),
+    messages: conversationMessages(call, transcript),
     textFile: `${callId}.txt`,
   };
 

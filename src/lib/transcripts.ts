@@ -27,6 +27,38 @@ export type SavedTranscript = TranscriptInput & {
 
 const transcriptsDirectory = path.join(process.cwd(), "data", "transcripts");
 
+const assistantLabels = new Set(["ai", "assistant", "relay311", "relay 311"]);
+const callerLabels = new Set(["caller", "customer", "user"]);
+
+export function conversationMessages(
+  transcript: string,
+  providerMessages: TranscriptInput["messages"] = [],
+): TranscriptInput["messages"] {
+  const messages: TranscriptInput["messages"] = [];
+
+  for (const line of transcript.split(/\r?\n/)) {
+    const match = line.match(/^([^:]{1,80}):\s*(.*)$/);
+    if (!match) continue;
+
+    const label = match[1].trim().toLowerCase();
+    const text = match[2].trim();
+    const role = assistantLabels.has(label)
+      ? "assistant"
+      : callerLabels.has(label)
+        ? "user"
+        : null;
+
+    if (role && text) messages.push({ role, text });
+  }
+
+  const roles = new Set(messages.map((message) => message.role));
+  if (roles.has("assistant") && roles.has("user")) return messages;
+
+  return providerMessages.filter(
+    (message) => message.role === "assistant" || message.role === "user",
+  );
+}
+
 function safeCallId(callId: string) {
   return callId.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 200);
 }
@@ -47,6 +79,7 @@ export async function saveTranscriptFile(
     createdAt: input.createdAt ?? receivedAt,
     receivedAt,
     textFile,
+    messages: conversationMessages(input.transcript, input.messages),
   };
 
   await mkdir(directory, { recursive: true });

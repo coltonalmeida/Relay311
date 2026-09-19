@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "vapi:configure": "node --env-file=.env.local scripts/configure-vapi-operator.mjs",
+    "transcripts:backfill": "node scripts/backfill-transcript-messages.mjs",
     "transcripts:sync": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs --once",
     "transcripts:watch": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs"
   },
