@@ -1,10 +1,33 @@
 "use client";
 
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { Map as MapLibreMap } from "maplibre-gl";
+import { useEffect, useRef, useState } from "react";
 import { PRIORITY_TOKENS } from "@/lib/design-tokens";
-import { pseudoGeocode } from "@/lib/incident-heuristics";
+import { TORONTO_BOUNDS } from "@/lib/toronto-bounds";
 import type { IncidentRecord, Priority } from "@/lib/schemas";
 
 const PRIORITY_ORDER: Priority[] = ["critical", "high", "medium", "low"];
+const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
+const WORKER_URL = "/maplibre/maplibre-gl-worker.mjs";
+
+type MapLibreModule = typeof import("maplibre-gl");
+type LocatedIncident = IncidentRecord & { location: { latitude: number; longitude: number } };
+
+function isLocated(incident: IncidentRecord): incident is LocatedIncident {
+  return incident.location.latitude !== undefined && incident.location.longitude !== undefined;
+}
+
+const { west, south, east, north } = TORONTO_BOUNDS;
+const TORONTO_LNGLAT_BOUNDS: [[number, number], [number, number]] = [
+  [west, south],
+  [east, north],
+];
+// Loose enough that the whole city fits at any card size, tight enough to keep the view on Toronto.
+const PANNING_BOUNDS: [[number, number], [number, number]] = [
+  [west - 0.25, south - 0.12],
+  [east + 0.25, north + 0.12],
+];
 
 export default function CityMap({
   incidents,
@@ -19,49 +42,92 @@ export default function CityMap({
   onSelect: (id: string) => void;
   openCount: number;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pinsRef = useRef(new Map<string, (active: boolean) => void>());
+  const handlersRef = useRef({ onHover, onSelect });
+  const [loaded, setLoaded] = useState<{ map: MapLibreMap; maplibre: MapLibreModule } | null>(null);
+
+  useEffect(() => {
+    handlersRef.current = { onHover, onSelect };
+  }, [onHover, onSelect]);
+
+  useEffect(() => {
+    let cancelled = false;
+    let map: MapLibreMap | undefined;
+
+    import("maplibre-gl").then((maplibre) => {
+      if (cancelled || !containerRef.current) return;
+      maplibre.setWorkerUrl(WORKER_URL);
+      map = new maplibre.Map({
+        container: containerRef.current,
+        style: MAP_STYLE,
+        bounds: TORONTO_LNGLAT_BOUNDS,
+        fitBoundsOptions: { padding: 16 },
+        maxBounds: PANNING_BOUNDS,
+        minZoom: 9,
+        attributionControl: { compact: true },
+      });
+      map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
+      setLoaded({ map, maplibre });
+    });
+
+    return () => {
+      cancelled = true;
+      map?.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const { map, maplibre } = loaded;
+    const pins = pinsRef.current;
+
+    const markers = incidents.filter(isLocated).map((incident) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-label", incident.title);
+      button.className = "block cursor-pointer p-1";
+      const dot = document.createElement("span");
+      dot.className = "block h-3.5 w-3.5 rounded-full border-2 border-paper transition-transform";
+      dot.style.background = PRIORITY_TOKENS[incident.priority].dot;
+      button.append(dot);
+
+      button.addEventListener("mouseenter", () => handlersRef.current.onHover(incident.id));
+      button.addEventListener("mouseleave", () => handlersRef.current.onHover(null));
+      button.addEventListener("focus", () => handlersRef.current.onHover(incident.id));
+      button.addEventListener("blur", () => handlersRef.current.onHover(null));
+      button.addEventListener("click", () => handlersRef.current.onSelect(incident.id));
+
+      pins.set(incident.id, (active) => {
+        // MapLibre owns the marker element's transform, so scale the inner dot instead.
+        dot.style.transform = active ? "scale(1.4)" : "";
+        dot.style.boxShadow = active ? `0 0 0 5px ${PRIORITY_TOKENS[incident.priority].bg}` : "";
+        button.style.zIndex = active ? "1" : "";
+      });
+      return new maplibre.Marker({ element: button })
+        .setLngLat([incident.location.longitude, incident.location.latitude])
+        .addTo(map);
+    });
+
+    return () => {
+      markers.forEach((marker) => marker.remove());
+      pins.clear();
+    };
+  }, [loaded, incidents]);
+
+  useEffect(() => {
+    for (const [id, setActive] of pinsRef.current) setActive(id === hoveredId);
+  }, [hoveredId, loaded, incidents]);
+
+  const unlocatedCount = incidents.filter((incident) => !isLocated(incident)).length;
+
   return (
     <div className="flex h-full flex-1 flex-col rounded-2xl bg-paper p-5 card-shadow">
       <div className="mb-3 flex items-baseline justify-between">
         <h2 className="text-sm font-semibold text-ink">City map — click a hotspot for details</h2>
         <span className="font-mono text-[11px] font-semibold text-muted">{openCount} open</span>
       </div>
-      <div
-        className="relative flex-1 overflow-hidden rounded-xl"
-        style={{
-          backgroundColor: "#eef0e6",
-          backgroundImage:
-            "repeating-linear-gradient(45deg, rgba(20,35,31,0.05) 0, rgba(20,35,31,0.05) 1px, transparent 1px, transparent 12px)",
-        }}
-      >
-        {incidents.map((incident) => {
-          const { xPct, yPct } =
-            incident.location.latitude !== undefined && incident.location.longitude !== undefined
-              ? pseudoGeocode(`${incident.location.latitude},${incident.location.longitude}`)
-              : pseudoGeocode(incident.id);
-          const tokens = PRIORITY_TOKENS[incident.priority];
-          const active = hoveredId === incident.id;
-          return (
-            <button
-              key={incident.id}
-              type="button"
-              aria-label={incident.title}
-              onMouseEnter={() => onHover(incident.id)}
-              onMouseLeave={() => onHover(null)}
-              onFocus={() => onHover(incident.id)}
-              onBlur={() => onHover(null)}
-              onClick={() => onSelect(incident.id)}
-              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-paper transition-transform"
-              style={{
-                left: `${xPct}%`,
-                top: `${yPct}%`,
-                background: tokens.dot,
-                transform: active ? "translate(-50%, -50%) scale(1.4)" : "translate(-50%, -50%)",
-                boxShadow: active ? `0 0 0 5px ${tokens.bg}` : undefined,
-              }}
-            />
-          );
-        })}
-      </div>
+      <div ref={containerRef} className="relative min-h-0 flex-1 overflow-hidden rounded-xl bg-[#eef0e6]" />
       <div className="mt-3 flex items-center gap-4">
         {PRIORITY_ORDER.map((priority) => (
           <span key={priority} className="flex items-center gap-1.5 text-[11px] font-medium text-muted">
@@ -69,6 +135,11 @@ export default function CityMap({
             {PRIORITY_TOKENS[priority].label}
           </span>
         ))}
+        {unlocatedCount > 0 && (
+          <span className="ml-auto text-[11px] font-medium text-muted">
+            {unlocatedCount} without a confirmed location
+          </span>
+        )}
       </div>
     </div>
   );

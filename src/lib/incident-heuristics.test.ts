@@ -8,7 +8,6 @@ import {
   formatDuration,
   isEscalatedCall,
   maskPhone,
-  pseudoGeocode,
 } from "./incident-heuristics";
 import type { IncidentRecord, StructuredReport } from "./schemas";
 
@@ -96,20 +95,6 @@ describe("derivePriority", () => {
 
   it("defaults everything else to medium", () => {
     expect(derivePriority(report({ summary: "A routine pothole report." }))).toBe("medium");
-  });
-});
-
-describe("pseudoGeocode", () => {
-  it("is deterministic for the same seed", () => {
-    expect(pseudoGeocode("incident-1")).toEqual(pseudoGeocode("incident-1"));
-  });
-
-  it("stays within the map bounds", () => {
-    const { xPct, yPct } = pseudoGeocode("some-uuid-seed");
-    expect(xPct).toBeGreaterThanOrEqual(8);
-    expect(xPct).toBeLessThanOrEqual(92);
-    expect(yPct).toBeGreaterThanOrEqual(8);
-    expect(yPct).toBeLessThanOrEqual(92);
   });
 });
 
