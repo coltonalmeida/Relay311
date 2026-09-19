@@ -9,10 +9,10 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "vapi:configure": "node --env-file=.env.local scripts/configure-vapi-operator.mjs",
+    "vapi:configure": "node --env-file=.env scripts/configure-vapi-operator.mjs",
     "transcripts:backfill": "node scripts/backfill-transcript-messages.mjs",
-    "transcripts:sync": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs --once",
-    "transcripts:watch": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs"
+    "transcripts:sync": "node --env-file=.env scripts/watch-vapi-transcripts.mjs --once",
+    "transcripts:watch": "node --env-file=.env scripts/watch-vapi-transcripts.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.23.0",

@@ -5,7 +5,7 @@ const apiKey = process.env.VAPI_PRIVATE_API_KEY;
 const assistantId = process.env.VAPI_ASSISTANT_ID;
 
 if (!apiKey || !assistantId) {
-  console.error("VAPI_PRIVATE_API_KEY and VAPI_ASSISTANT_ID are required in .env.local.");
+  console.error("VAPI_PRIVATE_API_KEY and VAPI_ASSISTANT_ID are required in .env.");
   process.exit(1);
 }
 

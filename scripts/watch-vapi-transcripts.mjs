@@ -10,13 +10,13 @@ const pollIntervalMs = 5_000;
 
 if (!apiKey) {
   console.error(
-    "Missing VAPI_PRIVATE_API_KEY. Rotate the exposed key, then put the replacement in .env.local.",
+    "Missing VAPI_PRIVATE_API_KEY. Rotate the exposed key, then put the replacement in .env.",
   );
   process.exit(1);
 }
 
 if (!phoneNumberId) {
-  console.error("Missing VAPI_PHONE_NUMBER_ID in .env.local.");
+  console.error("Missing VAPI_PHONE_NUMBER_ID in .env.");
   process.exit(1);
 }
 

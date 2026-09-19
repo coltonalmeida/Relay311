@@ -20,7 +20,7 @@ Hang up when finished. Within a few seconds, the watcher prints the saved filena
 npm run transcripts:sync
 ```
 
-Vapi credentials and IDs live in the Git-ignored `.env.local` file. Never prefix the private key with `NEXT_PUBLIC_` and never commit `.env.local`.
+Vapi credentials and IDs live in the Git-ignored `.env` file. Never prefix the private key with `NEXT_PUBLIC_` and never commit `.env`.
 
 The assistant's source-controlled system prompt is in `config/vapi-311-system-prompt.txt`. After editing it, push the new prompt to Vapi with:
 
