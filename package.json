@@ -4,7 +4,7 @@
   "private": true,
   "description": "Relay311 311 call triage API",
   "scripts": {
-    "dev": "tsx watch server/index.ts",
+    "dev": "npm run build && node --watch dist/server/index.js",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server/index.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
