@@ -61,7 +61,7 @@ const update = {
   endCallMessage: "Thank you for calling Relay311. Your report has been recorded. Goodbye for now.",
   endCallPhrases: ["goodbye for now"],
   silenceTimeoutSeconds: 20,
-  maxDurationSeconds: 90,
+  maxDurationSeconds: 150,
 };
 
 const updateResponse = await fetch(`https://api.vapi.ai/assistant/${assistantId}`, {

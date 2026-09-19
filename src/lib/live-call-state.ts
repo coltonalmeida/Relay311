@@ -34,7 +34,7 @@ export type LiveCallState = {
 let current: LiveCallState | null = null;
 let lastEventAt = 0;
 
-// The configured assistant has a 90-second maximum duration. If the final
+// The configured assistant has a 120-second maximum duration. If the final
 // provider event is lost, do not leave the operator UI stuck on a phantom call.
 const STALE_CALL_AFTER_MS = 3 * 60 * 1000;
 
