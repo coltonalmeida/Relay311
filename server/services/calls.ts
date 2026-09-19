@@ -6,7 +6,7 @@ type Row = Record<string, any>;
 const callFromRow = (r: Row): CallRecord => ({
   id: r.id, externalCallId: r.external_call_id, transcript: r.transcript,
   startedAt: r.started_at, durationSeconds: r.duration_seconds,
-  processingStatus: r.processing_status, recordType: r.record_type,
+  processingStatus: r.processing_status, processingError: r.processing_error ?? null, recordType: r.record_type,
   report: r.report as StructuredReport | null, incidentId: r.incident_id,
   createdAt: r.created_at, updatedAt: r.updated_at
 });
@@ -31,7 +31,7 @@ export async function createCall(input: CreateCallInput): Promise<{ call: CallRe
   check(inserted.error);
   const rawCall = inserted.data as Row;
   try {
-    const report = processTranscript(input.transcript);
+    const report = await processTranscript(input.transcript);
     let incident: IncidentRecord | null = null;
     if (report.actionable) {
       const created = await supabase.from('incidents').insert({
@@ -49,7 +49,11 @@ export async function createCall(input: CreateCallInput): Promise<{ call: CallRe
     check(updated.error);
     return { call: callFromRow(updated.data as Row), incident };
   } catch (error) {
-    await supabase.from('calls').update({ processing_status: 'failed' }).eq('id', rawCall.id);
+    const message = error instanceof Error ? error.message : 'Unknown transcript processing error';
+    const failed = await supabase.from('calls').update({ processing_status: 'failed', processing_error: message }).eq('id', rawCall.id);
+    if (failed.error?.message.includes('processing_error')) {
+      await supabase.from('calls').update({ processing_status: 'failed' }).eq('id', rawCall.id);
+    }
     throw error;
   }
 }

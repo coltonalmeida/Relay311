@@ -36,6 +36,7 @@ export type CallRecord = {
   startedAt: string | null;
   durationSeconds: number | null;
   processingStatus: z.infer<typeof CallStatusSchema>;
+  processingError: string | null;
   recordType: z.infer<typeof RecordTypeSchema> | null;
   report: StructuredReport | null;
   incidentId: string | null;

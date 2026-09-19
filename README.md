@@ -24,9 +24,38 @@ the report is actionable.
 The response includes `recordType: "incident" | "information"`, allowing the
 frontend to distinguish incident reports from call-history-only records.
 
-Transcript processing is currently a deterministic local placeholder. It is
-isolated in `server/services/transcriptProcessor.ts` so Gemini can replace it
-later without changing the HTTP or database layers.
+Transcript processing uses Gemini structured output when `GEMINI_API_KEY` is
+configured. The result is validated with the shared Zod schema before it is
+stored or used to create an incident. `TRANSCRIPT_PROCESSOR=mock` enables the
+deterministic offline classifier for local development and automated tests.
+
+The default Gemini model is `gemini-3.5-flash-lite`. You can change the model,
+request timeout, and maximum attempts with the variables documented in
+`.env.example`. Gemini failures mark the stored call as `failed` and save a
+`processingError`; they do not create an incident from uncertain data.
+
+## Integration contracts
+
+Colton's Vapi integration should send a completed call to `POST /api/calls`:
+
+```json
+{
+  "externalCallId": "provider-call-id",
+  "transcript": "The complete raw transcript",
+  "startedAt": "2026-09-19T15:30:00.000Z",
+  "durationSeconds": 74
+}
+```
+
+Only `externalCallId` and `transcript` are required. The external ID must be
+unique, so webhook retries with the same ID will not create duplicate calls.
+This is ingestion idempotency, not municipal incident duplicate detection.
+
+Mark's dashboard can use `recordType` to separate incident calls from
+information-only history. A processed actionable call has an `incidentId` and
+the create response includes the new `incident`; an informational call returns
+`incident: null`. Failed calls expose `processingStatus: "failed"` and a
+`processingError` for operator visibility.
 
 ## API
 

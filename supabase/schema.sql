@@ -8,11 +8,14 @@ create table if not exists public.calls (
   duration_seconds integer check (duration_seconds is null or duration_seconds >= 0),
   report jsonb,
   processing_status text not null default 'processing' check (processing_status in ('processing', 'processed', 'failed')),
+  processing_error text,
   record_type text check (record_type is null or record_type in ('incident', 'information')),
   incident_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.calls add column if not exists processing_error text;
 
 create table if not exists public.incidents (
   id uuid primary key default gen_random_uuid(),

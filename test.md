@@ -10,6 +10,22 @@ npm.cmd run dev
 
 Open a second PowerShell window for the commands below.
 
+## Gemini mode
+
+Add your Gemini API key to the root `.env` and rerun `supabase/schema.sql` before
+testing the real classifier:
+
+```dotenv
+GEMINI_API_KEY=your-real-key
+TRANSCRIPT_PROCESSOR=gemini
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+Restart the backend after changing `.env`. To test without making Gemini API
+calls, set `TRANSCRIPT_PROCESSOR=mock` instead. In Gemini mode, summaries,
+locations, categories, subtypes, observations, and confidence values will be
+model-generated and may differ slightly between runs.
+
 ## 1. Submit an actionable pothole call
 
 ```powershell
@@ -221,4 +237,3 @@ Run the frontend production build:
 cd client
 npm.cmd run build
 ```
-

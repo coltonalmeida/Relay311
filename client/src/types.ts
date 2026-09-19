@@ -19,6 +19,7 @@ export interface CallRecord {
   startedAt: string | null
   durationSeconds: number | null
   processingStatus: string
+  processingError: string | null
   recordType: RecordType
   report: Report | null
   incidentId: string | null
