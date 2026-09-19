@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { StructuredReport } from "./schemas";
-import { extractStreetNames, intersectionKeys, normalizeStreetName } from "./street-names.ts";
+import { extractPlaceNames, extractStreetNames, intersectionKeys, normalizeStreetName } from "./street-names.ts";
 import { isInToronto, TORONTO_BOUNDS, type Coordinates } from "./toronto-bounds.ts";
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
@@ -9,6 +9,7 @@ const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 // Built from the City of Toronto centreline intersection file by `npm run intersections:update`.
 const INTERSECTIONS_FILE = path.join(process.cwd(), "data", "toronto-intersections.json");
 const MAX_STREETS_PAIRED = 4;
+const MAX_NAME_EXPANSIONS = 8;
 
 // Pair key (see intersectionKeys) -> [latitude, longitude].
 export type IntersectionIndex = Record<string, [number, number]>;
@@ -64,14 +65,35 @@ out 1;`;
   }
 }
 
+const streetNamesByIndex = new WeakMap<IntersectionIndex, string[]>();
+
+function streetNamesIn(index: IntersectionIndex): string[] {
+  let names = streetNamesByIndex.get(index);
+  if (!names) {
+    names = [...new Set(Object.keys(index).flatMap((key) => key.split("&")))].sort();
+    streetNamesByIndex.set(index, names);
+  }
+  return names;
+}
+
+// A spoken name plus the city streets it is short for: "queens park" -> "queens park cres e", "queens park cres w"...
+function nameVariants(name: string, index: IntersectionIndex): string[] {
+  const longer = streetNamesIn(index).filter((street) => street.startsWith(`${name} `));
+  return [name, ...longer.slice(0, MAX_NAME_EXPANSIONS)];
+}
+
 // Finds where two of the named streets meet, trying the first two first and then the other pairs.
 export function lookupIntersection(streets: string[], index: IntersectionIndex): Coordinates | null {
-  const names = [...new Set(streets.slice(0, MAX_STREETS_PAIRED).map(normalizeStreetName))].filter(Boolean);
+  const names = [...new Set(streets.map(normalizeStreetName))].filter(Boolean).slice(0, MAX_STREETS_PAIRED);
   for (let i = 0; i < names.length; i += 1) {
     for (let j = i + 1; j < names.length; j += 1) {
-      for (const key of intersectionKeys(names[i], names[j])) {
-        const point = index[key];
-        if (point) return toTorontoCoordinates(point[0], point[1]);
+      for (const a of nameVariants(names[i], index)) {
+        for (const b of nameVariants(names[j], index)) {
+          for (const key of intersectionKeys(a, b)) {
+            const point = index[key];
+            if (point) return toTorontoCoordinates(point[0], point[1]);
+          }
+        }
       }
     }
   }
@@ -107,16 +129,21 @@ async function searchNominatim(query: string): Promise<Coordinates | null> {
 }
 
 // Resolves a caller-described location to coordinates inside Toronto: street intersections
-// ("Yonge Street near Eglinton Avenue") from the city's intersection file, everything else via Nominatim.
+// ("Yonge Street near Eglinton Avenue", "Queens Park on Wellesley Street West") from the city's
+// intersection file, everything else via Nominatim.
 // Never throws: a failed lookup just leaves the incident unplotted.
 export async function geocodeToronto(raw: string): Promise<Coordinates | null> {
   const query = raw.trim();
   if (!query) return null;
 
   const streets = extractStreetNames(query);
-  if (streets.length >= 2) {
-    const intersection = lookupIntersection(streets, await loadIntersectionIndex());
+  // Suffixed streets go first so an unrecognised capitalised word never displaces a real street pair.
+  const candidates = [...streets, ...extractPlaceNames(query)];
+  if (candidates.length >= 2) {
+    const intersection = lookupIntersection(candidates, await loadIntersectionIndex());
     if (intersection) return intersection;
+  }
+  if (streets.length >= 2) {
     const onlineIntersection = await searchOverpassIntersection(streets);
     if (onlineIntersection) return onlineIntersection;
   }

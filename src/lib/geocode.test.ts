@@ -59,6 +59,14 @@ describe("geocodeToronto", () => {
     expect(url.searchParams.get("bounded")).toBe("1");
   });
 
+  it("resolves a street without a suffix against the city intersection file", async () => {
+    const fetchMock = mockFetch([]);
+    const point = await geocodeToronto("Queens Park on Wellesley Street West");
+    expect(point?.latitude).toBeCloseTo(43.6636, 3);
+    expect(point?.longitude).toBeCloseTo(-79.3906, 3);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("uses the named landmark in an outside-of description", async () => {
     const fetchMock = mockFetch([{ lat: "43.6639173", lon: "-79.3939676" }]);
     await expect(geocodeToronto("Queens Park, right outside of Hart House")).resolves.toEqual({

@@ -47,6 +47,14 @@ export function extractStreetNames(raw: string): string[] {
   });
 }
 
+// Capitalised phrases that are not suffixed streets, e.g. "Queens Park on Wellesley Street West" -> ["Queens Park"].
+// Some Toronto streets have no standard suffix (Queens Park, The Esplanade), so these are also tried as streets.
+export function extractPlaceNames(raw: string): string[] {
+  return [...raw.matchAll(/\b[A-Z][\w'’.-]*(?:\s+[A-Z][\w'’.-]*)*/g)]
+    .map(([phrase]) => phrase)
+    .filter((phrase) => phrase.toLowerCase() !== "toronto" && extractStreetNames(phrase).length === 0);
+}
+
 // Canonical lowercase form shared by caller phrasing and city data:
 // "Eglinton Avenue East" and "Eglinton Ave E" both become "eglinton ave e"; "Saint Clair" becomes "st clair".
 export function normalizeStreetName(name: string): string {
