@@ -2,6 +2,7 @@
   "name": "relay311",
   "version": "0.1.0",
   "private": true,
+<<<<<<< HEAD
   "description": "Relay311 311 call triage API",
   "scripts": {
     "dev": "npm run build && node --watch dist/server/index.js",
@@ -22,5 +23,35 @@
     "@types/node": "^22.18.6",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
+=======
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "vapi:configure": "node --env-file=.env.local scripts/configure-vapi-operator.mjs",
+    "transcripts:backfill": "node scripts/backfill-transcript-messages.mjs",
+    "transcripts:sync": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs --once",
+    "transcripts:watch": "node --env-file=.env.local scripts/watch-vapi-transcripts.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+>>>>>>> origin/main
   }
 }
