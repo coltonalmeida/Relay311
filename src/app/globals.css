@@ -52,6 +52,22 @@ a {
   box-shadow: 0 8px 30px -10px rgba(20, 35, 31, 0.2);
 }
 
+.relay-map-popup .maplibregl-popup-content {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px rgba(20, 35, 31, 0.16);
+  padding: 10px 12px;
+}
+
+.relay-map-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: var(--paper);
+}
+
+.relay-map-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  border-bottom-color: var(--paper);
+}
+
 @keyframes r311-bar {
   0%,
   100% {

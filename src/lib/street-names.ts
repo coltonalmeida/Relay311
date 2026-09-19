@@ -14,6 +14,12 @@ const SUFFIXES: Record<string, string> = {
 const DIRECTIONS: Record<string, string> = {
   east: "e", e: "e", west: "w", w: "w", north: "n", n: "n", south: "s", s: "s",
 };
+const DISPLAY_SUFFIXES: Record<string, string> = {
+  st: "Street", ave: "Avenue", rd: "Road", blvd: "Boulevard", dr: "Drive", cres: "Crescent",
+  crt: "Court", pl: "Place", trl: "Trail", ter: "Terrace", gdns: "Gardens", crcl: "Circle",
+  grv: "Grove", hts: "Heights", gt: "Gate", sq: "Square", pkwy: "Parkway", ln: "Lane",
+  hwy: "Highway", way: "Way", line: "Line", quay: "Quay", mews: "Mews", walk: "Walk", path: "Path",
+};
 const DISPLAY_DIRECTIONS: Record<string, string> = { e: "East", w: "West", n: "North", s: "South" };
 
 // Words ending in a street suffix, optionally followed by a direction.
@@ -31,7 +37,13 @@ export function extractStreetNames(raw: string): string[] {
     const words = name.trim().split(/\s+/);
     const base = words.slice(words.findLastIndex((word) => !/^[A-Z]/.test(word)) + 1);
     if (base.length === 0) return [];
-    return [[...base, suffix, direction].filter(Boolean).join(" ")];
+    const canonicalSuffix = SUFFIXES[suffix.toLowerCase()];
+    const canonicalDirection = direction ? DIRECTIONS[direction.toLowerCase()] : undefined;
+    return [
+      [...base, DISPLAY_SUFFIXES[canonicalSuffix], canonicalDirection && DISPLAY_DIRECTIONS[canonicalDirection]]
+        .filter(Boolean)
+        .join(" "),
+    ];
   });
 }
 

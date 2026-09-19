@@ -59,6 +59,16 @@ describe("geocodeToronto", () => {
     expect(url.searchParams.get("bounded")).toBe("1");
   });
 
+  it("uses the named landmark in an outside-of description", async () => {
+    const fetchMock = mockFetch([{ lat: "43.6639173", lon: "-79.3939676" }]);
+    await expect(geocodeToronto("Queens Park, right outside of Hart House")).resolves.toEqual({
+      latitude: 43.6639173,
+      longitude: -79.3939676,
+    });
+    const url = new URL(fetchMock.mock.calls[0][0] as string);
+    expect(url.searchParams.get("q")).toBe("Hart House, Toronto, Ontario");
+  });
+
   it("rejects hits outside Toronto", async () => {
     mockFetch([{ lat: "45.4215", lon: "-75.6972" }]);
     await expect(geocodeToronto("Parliament Hill")).resolves.toBeNull();

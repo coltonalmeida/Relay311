@@ -4,6 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { PRIORITY_TOKENS } from "@/lib/design-tokens";
+import { displayId } from "@/lib/incident-heuristics";
 import { TORONTO_BOUNDS } from "@/lib/toronto-bounds";
 import type { IncidentRecord, Priority } from "@/lib/schemas";
 
@@ -85,12 +86,45 @@ export default function CityMap({
     const markers = incidents.filter(isLocated).map((incident) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.setAttribute("aria-label", incident.title);
+      button.setAttribute(
+        "aria-label",
+        `${incident.title}. ${incident.location.raw || "Location confirmed on map"}`,
+      );
       button.className = "block cursor-pointer p-1";
       const dot = document.createElement("span");
       dot.className = "block h-3.5 w-3.5 rounded-full border-2 border-paper transition-transform";
       dot.style.background = PRIORITY_TOKENS[incident.priority].dot;
       button.append(dot);
+
+      const popupContent = document.createElement("div");
+      popupContent.className = "min-w-52 p-1";
+
+      const meta = document.createElement("div");
+      meta.className = "mb-1 flex items-center gap-2";
+      const priorityDot = document.createElement("span");
+      priorityDot.className = "h-2 w-2 shrink-0 rounded-full";
+      priorityDot.style.background = PRIORITY_TOKENS[incident.priority].dot;
+      const incidentId = document.createElement("span");
+      incidentId.className = "font-mono text-[10px] font-semibold uppercase text-muted";
+      incidentId.textContent = displayId(incident.id, "INC");
+      meta.append(priorityDot, incidentId);
+
+      const title = document.createElement("p");
+      title.className = "text-sm font-semibold leading-snug text-ink";
+      title.textContent = incident.title;
+      const location = document.createElement("p");
+      location.className = "mt-1 text-xs leading-snug text-muted";
+      location.textContent = incident.location.raw || "Confirmed map location";
+      popupContent.append(meta, title, location);
+
+      const popup = new maplibre.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 14,
+        className: "relay-map-popup",
+      })
+        .setLngLat([incident.location.longitude, incident.location.latitude])
+        .setDOMContent(popupContent);
 
       button.addEventListener("mouseenter", () => handlersRef.current.onHover(incident.id));
       button.addEventListener("mouseleave", () => handlersRef.current.onHover(null));
@@ -103,6 +137,8 @@ export default function CityMap({
         dot.style.transform = active ? "scale(1.4)" : "";
         dot.style.boxShadow = active ? `0 0 0 5px ${PRIORITY_TOKENS[incident.priority].bg}` : "";
         button.style.zIndex = active ? "1" : "";
+        if (active) popup.addTo(map);
+        else popup.remove();
       });
       return new maplibre.Marker({ element: button })
         .setLngLat([incident.location.longitude, incident.location.latitude])
@@ -111,6 +147,7 @@ export default function CityMap({
 
     return () => {
       markers.forEach((marker) => marker.remove());
+      for (const setActive of pins.values()) setActive(false);
       pins.clear();
     };
   }, [loaded, incidents]);

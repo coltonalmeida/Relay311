@@ -5,6 +5,7 @@ import { extractStreetNames, intersectionKeys, normalizeStreetName } from "./str
 import { isInToronto, TORONTO_BOUNDS, type Coordinates } from "./toronto-bounds.ts";
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
+const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 // Built from the City of Toronto centreline intersection file by `npm run intersections:update`.
 const INTERSECTIONS_FILE = path.join(process.cwd(), "data", "toronto-intersections.json");
 const MAX_STREETS_PAIRED = 4;
@@ -27,6 +28,42 @@ function toTorontoCoordinates(lat: unknown, lon: unknown): Coordinates | null {
   return isInToronto(coordinates) ? coordinates : null;
 }
 
+function escapeOverpassRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function streetNamePattern(street: string): string {
+  const base = street.replace(/\s+(East|West|North|South)$/i, "");
+  return `^${escapeOverpassRegex(base)}( (East|West|North|South))?$`;
+}
+
+async function searchOverpassIntersection(streets: string[]): Promise<Coordinates | null> {
+  if (streets.length < 2) return null;
+  const first = streetNamePattern(streets[0]);
+  const second = streetNamePattern(streets[1]);
+  const query = `[out:json][timeout:8];
+area["name"="Toronto"]["boundary"="administrative"]->.searchArea;
+way(area.searchArea)["highway"]["name"~"${first}",i]->.a;
+way(area.searchArea)["highway"]["name"~"${second}",i]->.b;
+node(w.a)(w.b);
+out 1;`;
+
+  try {
+    const response = await fetch(OVERPASS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ data: query }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!response.ok) return null;
+    const body = (await response.json()) as { elements?: { lat?: number; lon?: number }[] };
+    const hit = body.elements?.find((element) => element.lat !== undefined && element.lon !== undefined);
+    return hit ? toTorontoCoordinates(hit.lat, hit.lon) : null;
+  } catch {
+    return null;
+  }
+}
+
 // Finds where two of the named streets meet, trying the first two first and then the other pairs.
 export function lookupIntersection(streets: string[], index: IntersectionIndex): Coordinates | null {
   const names = [...new Set(streets.slice(0, MAX_STREETS_PAIRED).map(normalizeStreetName))].filter(Boolean);
@@ -43,8 +80,12 @@ export function lookupIntersection(streets: string[], index: IntersectionIndex):
 
 async function searchNominatim(query: string): Promise<Coordinates | null> {
   const { west, south, east, north } = TORONTO_BOUNDS;
+  // Conversational descriptions such as "Queen's Park, right outside of Hart House"
+  // are too verbose for Nominatim. The named landmark is the most precise searchable part.
+  const outsideLandmark = query.match(/\b(?:right\s+)?outside(?:\s+of)?\s+(?:the\s+)?(.+)$/i)?.[1];
+  const searchableQuery = outsideLandmark?.trim() || query;
   const params = new URLSearchParams({
-    q: `${query}, Toronto, Ontario`,
+    q: `${searchableQuery}, Toronto, Ontario`,
     format: "jsonv2",
     limit: "1",
     countrycodes: "ca",
@@ -76,6 +117,8 @@ export async function geocodeToronto(raw: string): Promise<Coordinates | null> {
   if (streets.length >= 2) {
     const intersection = lookupIntersection(streets, await loadIntersectionIndex());
     if (intersection) return intersection;
+    const onlineIntersection = await searchOverpassIntersection(streets);
+    if (onlineIntersection) return onlineIntersection;
   }
   return searchNominatim(query);
 }
@@ -86,3 +129,5 @@ export async function withCoordinates(report: StructuredReport): Promise<Structu
   const coordinates = await geocodeToronto(location.raw);
   return coordinates ? { ...report, location: { ...location, ...coordinates } } : report;
 }
+
+export { extractStreetNames } from "./street-names.ts";
