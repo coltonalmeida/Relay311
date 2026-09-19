@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import TranscriptLine from "@/components/transcript/TranscriptLine";
 import { PRIORITY_TOKENS } from "@/lib/design-tokens";
 import type { LiveCallState } from "@/lib/live-call-state";
+import { groupTranscriptTurns } from "@/lib/transcript-messages";
 import Waveform from "./Waveform";
 
 function formatElapsed(startedAt: string, now: number): string {
@@ -23,6 +24,7 @@ export default function LiveCallView() {
   const transcriptRevision = latestMessage
     ? `${call?.callId}:${call?.messages.length}:${latestMessage.role}:${latestMessage.text}`
     : "";
+  const transcriptTurns = groupTranscriptTurns(call?.messages ?? []);
 
   useEffect(() => {
     let cancelled = false;
@@ -121,15 +123,15 @@ export default function LiveCallView() {
           ref={transcriptScrollRef}
           className="mt-4 max-h-[280px] overflow-y-auto border-y border-hairline"
         >
-          {call.messages.length === 0 ? (
+          {transcriptTurns.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">Listening for the caller…</p>
           ) : (
-            call.messages.map((message, index) => (
+            transcriptTurns.map((message, index) => (
               <TranscriptLine
                 key={index}
                 role={message.role}
                 text={message.text}
-                partial={index === call.messages.length - 1 && call.transcribing}
+                partial={index === transcriptTurns.length - 1 && call.transcribing}
               />
             ))
           )}
