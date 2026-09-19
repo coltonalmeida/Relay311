@@ -1,0 +1,79 @@
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { z } from "zod";
+
+export const transcriptMessageSchema = z.object({
+  role: z.enum(["assistant", "user", "system", "tool"]),
+  text: z.string(),
+});
+
+export const transcriptInputSchema = z.object({
+  callId: z.string().min(1).max(200),
+  transcript: z.string().min(1),
+  messages: z.array(transcriptMessageSchema).default([]),
+  endedReason: z.string().nullable().optional(),
+  createdAt: z.string().datetime().optional(),
+  callerPhone: z.string().nullable().optional(),
+});
+
+export type TranscriptInput = z.infer<typeof transcriptInputSchema>;
+
+export type SavedTranscript = TranscriptInput & {
+  id: string;
+  provider: "vapi";
+  receivedAt: string;
+  textFile: string;
+};
+
+const transcriptsDirectory = path.join(process.cwd(), "data", "transcripts");
+
+function safeCallId(callId: string) {
+  return callId.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 200);
+}
+
+export async function saveTranscriptFile(
+  input: TranscriptInput,
+  directory = transcriptsDirectory,
+): Promise<SavedTranscript> {
+  const callId = safeCallId(input.callId);
+  const receivedAt = new Date().toISOString();
+  const textFile = `${callId}.txt`;
+  const saved: SavedTranscript = {
+    ...input,
+    callId,
+    id: `vapi-${callId}`,
+    provider: "vapi",
+    endedReason: input.endedReason ?? null,
+    createdAt: input.createdAt ?? receivedAt,
+    receivedAt,
+    textFile,
+  };
+
+  await mkdir(directory, { recursive: true });
+  await Promise.all([
+    writeFile(path.join(directory, textFile), `${saved.transcript.trim()}\n`, "utf8"),
+    writeFile(
+      path.join(directory, `${callId}.json`),
+      `${JSON.stringify(saved, null, 2)}\n`,
+      "utf8",
+    ),
+  ]);
+
+  return saved;
+}
+
+export async function listTranscriptFiles(directory = transcriptsDirectory): Promise<SavedTranscript[]> {
+  try {
+    const files = (await readdir(directory)).filter((file) => file.endsWith(".json"));
+    const transcripts = await Promise.all(
+      files.map(async (file) => {
+        const contents = await readFile(path.join(directory, file), "utf8");
+        return JSON.parse(contents) as SavedTranscript;
+      }),
+    );
+    return transcripts.sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") return [];
+    throw error;
+  }
+}
